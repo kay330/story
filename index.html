@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>주역점 앱</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --bg-2: #121a2f;
+      --card: rgba(18, 26, 47, 0.88);
+      --card-2: rgba(25, 35, 63, 0.94);
+      --text: #edf2ff;
+      --sub: #9ba7c7;
+      --accent: #6f8cff;
+      --accent-2: #8e6dff;
+      --line: #dbe4ff;
+      --yang: #edf2ff;
+      --yin: #0f1730;
+      --shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(111, 140, 255, 0.18), transparent 30%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .app {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 18px 14px 42px;
+    }
+
+    .hero, .card {
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(143, 165, 255, 0.14);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 22px 18px;
+      margin-bottom: 14px;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      line-height: 1.35;
+    }
+
+    h1 { font-size: 1.8rem; }
+    h2 { font-size: 1.1rem; margin-bottom: 10px; }
+    h3 { font-size: 1rem; margin-bottom: 8px; }
+
+    .sub {
+      color: var(--sub);
+      margin-top: 10px;
+      font-size: 0.97rem;
+      line-height: 1.6;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .card { padding: 16px; }
+
+    .controls {
+      display: grid;
+      gap: 12px;
+    }
+
+    .tap-zone {
+      position: relative;
+      border: 2px dashed rgba(143, 165, 255, 0.35);
+      border-radius: 20px;
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 16px;
+      color: var(--accent);
+      font-weight: 700;
+      background: linear-gradient(180deg, rgba(23, 34, 63, 0.95), rgba(15, 23, 48, 0.95));
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .tap-zone.active {
+      transform: scale(0.995);
+      background: linear-gradient(180deg, rgba(39, 53, 92, 1), rgba(22, 34, 68, 1));
+    }
+
+    .tap-instruction {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .tap-count {
+      font-size: 2rem;
+      color: var(--text);
+    }
+
+    .mini {
+      font-size: 0.88rem;
+      color: var(--sub);
+      font-weight: 500;
+    }
+
+    .layout {
+      display: grid;
+      gap: 14px;
+    }
+
+    .draw-layout {
+      display: grid;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .draw-panel,
+    .stack-panel {
+      display: grid;
+      gap: 12px;
+    }
+
+    .stack-panel {
+      background: var(--card-2);
+      border-radius: 20px;
+      padding: 14px;
+      border: 1px solid rgba(143, 165, 255, 0.12);
+    }
+
+    .btn-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 14px 12px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+    }
+
+    .secondary {
+      background: rgba(111, 140, 255, 0.14);
+      color: #dfe7ff;
+      border: 1px solid rgba(111, 140, 255, 0.24);
+    }
+
+    .ghost {
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      border: 1px solid rgba(143, 165, 255, 0.14);
+    }
+
+    .progress {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .progress strong { font-size: 1rem; }
+
+    .hexagram-stack {
+      display: grid;
+      gap: 8px;
+      padding: 10px 0 6px;
+      min-height: 180px;
+    }
+
+    .line-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .line-label {
+      width: 44px;
+      color: var(--sub);
+      font-size: 0.84rem;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .iching-line {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 18px;
+      position: relative;
+    }
+
+    .yang-line,
+    .yin-line-left,
+    .yin-line-right {
+      height: 12px;
+      border-radius: 999px;
+      background: var(--yang);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+    }
+
+    .yang-line { width: 88%; }
+    .yin-wrap {
+      width: 88%;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .yin-line-left, .yin-line-right { width: calc(50% - 8px); }
+
+    .changing-mark {
+      position: absolute;
+      right: 8px;
+      top: -2px;
+      font-size: 0.8rem;
+      color: #ff8da1;
+      font-weight: 800;
+    }
+
+    .result-title {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 14px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-self: flex-start;
+      background: rgba(111, 140, 255, 0.14);
+      color: #dfe7ff;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      border: 1px solid rgba(143, 165, 255, 0.2);
+    }
+
+    .two-cols {
+      display: grid;
+      gap: 12px;
+    }
+
+    .section-block {
+      padding: 12px 12px 10px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 14px;
+      border: 1px solid rgba(143,165,255,0.1);
+    }
+
+    .section-block p, .section-block li {
+      line-height: 1.7;
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    .section-block ul {
+      padding-left: 18px;
+      margin: 8px 0 0;
+    }
+
+    .muted { color: var(--sub); }
+    .hidden { display: none; }
+
+    textarea {
+      width: 100%;
+      min-height: 96px;
+      border-radius: 14px;
+      border: 1px solid rgba(143, 165, 255, 0.16);
+      padding: 12px;
+      font: inherit;
+      resize: vertical;
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+    }
+
+    textarea::placeholder {
+      color: #7e8db5;
+    }
+
+    @media (min-width: 700px) {
+      .two-cols {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .draw-layout {
+        grid-template-columns: 1.05fr 0.95fr;
+      }
+    }
+
+    /* Mobile readability improvements */
+    @media (max-width: 699px) {
+      body { font-size: 18px; }
+      .app { padding: 16px 12px 36px; }
+      h1 { font-size: 2rem; }
+      h2 { font-size: 1.3rem; }
+      h3 { font-size: 1.15rem; }
+      .sub { font-size: 1.08rem; }
+      .mini { font-size: 1rem; line-height: 1.5; }
+      .tap-count { font-size: 2.4rem; }
+      button { font-size: 1.08rem; padding: 16px 12px; }
+      .line-label { font-size: 1rem; width: 50px; }
+      .section-block p, .section-block li { font-size: 1.08rem; }
+      .badge { font-size: 0.95rem; }
+      .progress strong { font-size: 1.1rem; }
+      textarea { font-size: 1.08rem; }
+    }
+
+    .bagua-graphic {
+      width: 112px;
+      height: 112px;
+      margin: 0 auto 4px;
+      flex-shrink: 0;
+      filter: drop-shadow(0 2px 8px rgba(111, 140, 255, 0.2));
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="hero">
+      <h1>주역점</h1>
+      <p class="sub">답을 얻고 싶은 질문을 떠올리세요. 간절한 마음으로 괘를 뽑으세요.</p>
+    </section>
+
+    <section class="card controls layout">
+      <div>
+        <h2>질문 적기</h2>
+        <textarea id="question" placeholder="예: 지금 이직을 추진해도 괜찮을까?"></textarea>
+      </div>
+      <div class="draw-layout">
+        <div class="draw-panel">
+          <div class="progress">
+            <strong id="progressText">현재 효: 0 / 6</strong>
+            <span class="muted" id="tapInfo">탭 1번 = 효 1개</span>
+          </div>
+          <div id="tapZone" class="tap-zone" role="button" aria-label="효 뽑기 탭 영역">
+            <div class="tap-instruction">
+              <svg class="bagua-graphic" viewBox="0 0 120 120" role="img" aria-label="팔괘 이미지" xmlns="http://www.w3.org/2000/svg" focusable="false">
+                <circle cx="60" cy="60" r="55" fill="#172342" stroke="#8fa5ff" stroke-width="2"/>
+                <circle cx="60" cy="60" r="43" fill="none" stroke="#8fa5ff" stroke-opacity=".55" stroke-width="1"/>
+                <g fill="#edf2ff">
+                  <g transform="translate(60 17)"><rect x="-10" y="-6" width="20" height="3" rx="1"/><rect x="-10" y="0" width="20" height="3" rx="1"/><rect x="-10" y="6" width="20" height="3" rx="1"/></g>
+                  <g transform="translate(90 30) rotate(45)"><rect x="-10" y="-6" width="20" height="3" rx="1"/><rect x="-10" y="0" width="8" height="3" rx="1"/><rect x="2" y="0" width="8" height="3" rx="1"/><rect x="-10" y="6" width="20" height="3" rx="1"/></g>
+                  <g transform="translate(103 60) rotate(90)"><rect x="-10" y="-6" width="8" height="3" rx="1"/><rect x="2" y="-6" width="8" height="3" rx="1"/><rect x="-10" y="0" width="20" height="3" rx="1"/><rect x="-10" y="6" width="8" height="3" rx="1"/><rect x="2" y="6" width="8" height="3" rx="1"/></g>
+                  <g transform="translate(90 90) rotate(135)"><rect x="-10" y="-6" width="20" height="3" rx="1"/><rect x="-10" y="0" width="8" height="3" rx="1"/><rect x="2" y="0" width="8" height="3" rx="1"/><rect x="-10" y="6" width="8" height="3" rx="1"/><rect x="2" y="6" width="8" height="3" rx="1"/></g>
+                  <g transform="translate(60 103)"><rect x="-10" y="-6" width="8" height="3" rx="1"/><rect x="2" y="-6" width="8" height="3" rx="1"/><rect x="-10" y="0" width="20" height="3" rx="1"/><rect x="-10" y="6" width="8" height="3" rx="1"/><rect x="2" y="6" width="8" height="3" rx="1"/></g>
+                  <g transform="translate(30 90) rotate(45)"><rect x="-10" y="-6" width="20" height="3" rx="1"/><rect x="-10" y="0" width="20" height="3" rx="1"/><rect x="-10" y="6" width="8" height="3" rx="1"/><rect x="2" y="6" width="8" height="3" rx="1"/></g>
+                  <g transform="translate(17 60) rotate(90)"><rect x="-10" y="-6" width="20" height="3" rx="1"/><rect x="-10" y="0" width="8" height="3" rx="1"/><rect x="2" y="0" width="8" height="3" rx="1"/><rect x="-10" y="6" width="20" height="3" rx="1"/></g>
+                  <g transform="translate(30 30) rotate(135)"><rect x="-10" y="-6" width="8" height="3" rx="1"/><rect x="2" y="-6" width="8" height="3" rx="1"/><rect x="-10" y="0" width="20" height="3" rx="1"/><rect x="-10" y="6" width="20" height="3" rx="1"/></g>
+                </g>
+                <circle cx="60" cy="60" r="15" fill="#172342" stroke="#8e6dff" stroke-width="2"/>
+                <text x="60" y="65" text-anchor="middle" fill="#ffffff" font-family="serif" font-size="16" font-weight="700">易</text>
+              </svg>
+              <div>화면을 터치해 점괘를 뽑으세요(총 6개)</div>
+              <div class="tap-count" id="tapCount">0</div>
+            </div>
+          </div>
+          <div id="livePreview" class="section-block" style="display:none;">
+            <h3>방금 뽑힌 효</h3>
+            <div id="liveLinePreview" class="iching-line" style="min-height:28px;"></div>
+            <p id="liveLineText" class="sub" style="margin-top:8px;"></p>
+          </div>
+          <div class="btn-row">
+            <button class="ghost" id="resetBtn">다시 하기</button>
+            <button class="secondary" id="autoBtn">자동 뽑기</button>
+          </div>
+        </div>
+
+        <div class="stack-panel">
+          <h2>현재 만들어진 괘</h2>
+          <div id="hexagramStack" class="hexagram-stack"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card hidden" id="resultCard" style="margin-top:14px;">
+      <div class="result-title">
+        <span class="badge" id="resultBadge"></span>
+        <h2 id="hexagramName"></h2>
+        <p class="sub" id="resultIntro"></p>
+      </div>
+
+      <div class="two-cols">
+        <div class="section-block">
+          <h3>핵심 해석</h3>
+          <p id="coreReading"></p>
+        </div>
+        <div class="section-block">
+          <h3>지금 상황에서의 의미</h3>
+          <p id="situationMeaning"></p>
+        </div>
+        <div class="section-block">
+          <h3>실생활 활용 방법</h3>
+          <ul id="practicalList"></ul>
+        </div>
+        <div class="section-block">
+          <h3>앞으로의 대응 방안</h3>
+          <ul id="actionList"></ul>
+        </div>
+        <div class="section-block">
+          <h3>해석 예시</h3>
+          <p id="exampleText"></p>
+        </div>
+        <div class="section-block">
+          <h3>변효와 변화의 방향</h3>
+          <p id="changeText"></p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const HEXAGRAMS = {
+      '111111': {
+        name: '건위천 (乾爲天)',
+        summary: '강한 창조력과 주도성이 드러나는 괘입니다. 스스로 움직이며 길을 열어야 할 때를 뜻합니다.',
+        core: '지금은 수동적으로 기다리기보다 분명한 목표를 세우고 스스로 판을 만들어 가야 하는 흐름입니다. 다만 강한 추진력만 믿고 독주하면 주변과 충돌할 수 있으므로, 자신감과 겸손을 함께 지니는 것이 중요합니다.',
+        situation: '일, 진로, 관계 모두에서 주도권이 나에게 오는 때입니다. 누군가 허락해주길 기다리기보다 내가 먼저 방향을 정하고 책임 있게 밀고 나가야 결과가 납니다.',
+        practical: ['새로운 제안, 지원, 발표, 사업 추진처럼 먼저 손을 들어야 하는 일을 미루지 마세요.', '계획은 크게 잡되 실행은 세부적으로 쪼개어 현실성과 지속성을 확보하세요.', '리더 역할을 맡는다면 독단보다 원칙과 공정성을 함께 보여야 신뢰가 생깁니다.'],
+        actions: ['오늘 안에 가장 중요한 한 가지를 정하고 즉시 첫 행동을 시작하세요.', '결정 전에 자신감은 유지하되, 놓친 변수나 주변 의견을 한 번 더 점검하세요.', '잘될수록 속도를 조금 조절하고, 장기전의 체력을 남겨두는 운영이 필요합니다.'],
+        example: '예를 들어 이직을 고민하는 사람이 이 괘를 받았다면, 아직 완벽한 확신이 없어도 적극적으로 시장을 탐색하고 원하는 조건을 명확히 내세우는 쪽이 좋다는 의미로 볼 수 있습니다. 다만 조건만 앞세우거나 공격적으로 움직이면 협상이 틀어질 수 있으므로 품위와 균형이 중요합니다.'
+      },
+      '000000': {
+        name: '곤위지 (坤爲地)',
+        summary: '받아들이고 길러내는 힘이 큰 괘입니다. 전면에 나서기보다 상황을 품고 다듬을수록 유리합니다.',
+        core: '이 괘는 강하게 밀어붙이는 것보다 순리, 협조, 인내, 수용의 덕을 강조합니다. 서두르는 행동보다 바탕을 다지고 사람과 흐름을 받쳐주는 자세에서 성과가 생깁니다.',
+        situation: '결과를 빨리 내기보다 기반을 다질 때입니다. 실무 정리, 관계 회복, 몸과 마음의 안정, 재정 점검처럼 보이지 않는 부분을 충실히 다루면 나중에 크게 도움이 됩니다.',
+        practical: ['지금은 앞장서기보다 필요한 역할을 묵묵히 수행하면서 신뢰를 쌓으세요.', '관계에서는 주장보다 경청과 배려가 큰 힘을 발휘합니다.', '생활에서는 집, 건강, 수면, 식사, 금전 흐름처럼 기본을 안정시키는 일이 중요합니다.'],
+        actions: ['당장 눈에 보이는 성과보다 오래 버틸 구조를 만드는 데 집중하세요.', '협력해야 할 사람들의 입장을 정리하고, 충돌을 줄이는 방식으로 움직이세요.', '무리한 확장이나 감정적인 결단은 잠시 미루고 바닥을 튼튼히 하세요.'],
+        example: '연애 문제로 이 괘를 받았다면, 상대를 설득하거나 관계를 급히 규정하려 하기보다 차분히 신뢰를 회복하고 서로의 생활 리듬을 맞추는 과정이 우선이라는 뜻으로 해석할 수 있습니다.'
+      },
+      '100010': {
+        name: '수뢰둔 (水雷屯)',
+        summary: '시작은 있으나 장애도 함께 오는 괘입니다. 초반 혼란을 견디며 틀을 잡아야 합니다.',
+        core: '무언가 막 시작되었거나 시작하려는 국면이지만 아직 여건이 완전하지 않습니다. 서두르면 더 꼬일 수 있고, 작은 문제를 정리하며 기초를 세우면 점차 길이 보입니다.',
+        situation: '새 직장, 사업 시작, 새로운 관계, 공부 시작처럼 초반 시행착오가 많은 흐름입니다. 방향성은 나쁘지 않지만 처음부터 매끈하길 기대하면 실망이 커집니다.',
+        practical: ['초기 혼란을 실패로 단정하지 말고 학습 비용으로 받아들이세요.', '도움을 요청할 사람과 참고할 기준을 분명히 정해 혼선을 줄이세요.', '작은 성공 경험을 쌓아 리듬을 만드는 것이 중요합니다.'],
+        actions: ['한 번에 완성하려 하지 말고 단계별 목표를 세우세요.', '지금 필요한 정보, 사람, 자원을 목록화해서 우선순위대로 확보하세요.', '불안할수록 기본 원칙을 지키고, 즉흥적 변경을 줄이세요.'],
+        example: '창업 준비 중이라면 처음 문의, 첫 계약, 첫 시행착오에서 예상보다 삐걱거릴 수 있습니다. 이때 방향을 전부 뒤집기보다 문제를 하나씩 정리하면 이후 안정화 가능성이 높습니다.'
+      },
+      '010001': {
+        name: '산수몽 (山水蒙)',
+        summary: '배움과 미숙함의 괘입니다. 섣부른 확신보다 배우려는 자세가 가장 중요합니다.',
+        core: '지금은 모든 것을 이미 안다고 생각할 때보다, 스스로의 미숙함을 인정하고 질문하는 태도에서 운이 열립니다. 잘 모르는 상황을 억지로 통제하려 하면 더 혼란스러워질 수 있습니다.',
+        situation: '정보가 부족하거나 상대의 속뜻이 잘 보이지 않는 시기입니다. 배우는 입장, 초보자의 입장, 탐색의 시간이 길수록 오히려 실수가 줄어듭니다.',
+        practical: ['전문가 조언, 선배 경험, 검증된 자료를 적극적으로 참고하세요.', '이해하지 못한 부분은 넘기지 말고 명확히 질문하세요.', '관계에서는 오해를 단정하지 말고 사실 확인을 먼저 하세요.'],
+        actions: ['공부·리서치·상담의 시간을 충분히 확보하세요.', '중요 결정을 내리기 전에 최소 한 번은 검토자나 조언자를 거치세요.', '겉으로 아는 척하지 말고, 부족한 부분을 채우는 계획을 세우세요.'],
+        example: '부동산 계약을 앞두고 이 괘가 나왔다면, 감으로 밀어붙이기보다 계약 조건, 세금, 입지, 대출 구조를 꼼꼼히 배우고 확인해야 손해를 줄인다는 뜻으로 볼 수 있습니다.'
+      },
+      '111010': {
+        name: '천수송 (天水訟)',
+        summary: '의견 차이와 긴장이 드러나는 괘입니다. 밀어붙이기보다 원칙과 절차를 세워야 합니다.',
+        core: '이 괘는 다툼, 시비, 오해, 이해관계 충돌을 상징합니다. 이길 수 있느냐보다 무엇을 지키며 다루느냐가 중요합니다. 감정적으로 맞붙으면 피로만 커지고, 사실과 기준을 정리할수록 유리합니다.',
+        situation: '직장에서는 역할 충돌이나 책임 공방, 관계에서는 말의 해석 차이, 금전 문제에서는 약속과 조건 문제로 번질 수 있습니다. 지금은 감정 해소보다 구조 정리가 먼저입니다.',
+        practical: ['메신저 감정싸움보다 기록이 남는 방식으로 핵심 쟁점을 정리하세요.', '억울함을 바로 표출하기보다 상대와 나의 입장을 문장으로 분리해 보세요.', '법적·계약적 사안은 추측보다 문서 확인이 우선입니다.'],
+        actions: ['지금 당장 결론을 내기보다 쟁점, 증거, 원하는 결과를 분리해서 정리하세요.', '중재자나 상급자처럼 감정을 낮출 수 있는 제3의 채널을 활용하세요.', '자존심 때문에 길게 끌지 말고, 손실 최소화 기준을 세우세요.'],
+        example: '퇴사 과정에서 회사와 마찰이 생겼다면, 감정적인 장문 메시지보다 근로 조건과 인수인계 범위를 명확히 정리하는 편이 훨씬 유리하다는 의미로 읽을 수 있습니다.'
+      },
+      '010111': {
+        name: '수천수 (水天需)',
+        summary: '기다림이 필요한 괘입니다. 준비는 하되 때가 무르익을 때까지 조급함을 줄여야 합니다.',
+        core: '원하는 바가 있어도 지금 즉시 결과가 나오지 않을 가능성이 큽니다. 그러나 단순한 지체가 아니라, 준비와 축적의 시간으로 받아들이면 이후 전개가 훨씬 좋아질 수 있습니다.',
+        situation: '합격, 연락, 계약, 관계 진전, 투자 회수처럼 결과를 기다리는 문제에서 특히 자주 나옵니다. 성급히 결론을 재촉하면 오히려 흐름이 흔들릴 수 있습니다.',
+        practical: ['기다리는 동안 부족한 자료나 실력을 채우세요.', '상대 반응이 없다고 곧바로 부정적으로 단정하지 마세요.', '시간이 필요한 사안과 즉시 조치해야 하는 사안을 구분하세요.'],
+        actions: ['정해진 시점까지는 재촉 대신 준비에 집중하세요.', '불안해서 불필요한 연락이나 개입을 반복하지 마세요.', '기다림의 기간을 허비하지 말고, 대안 플랜도 함께 마련하세요.'],
+        example: '면접 결과를 기다리는 중 이 괘가 나왔다면, 계속 결과만 확인하며 초조해하기보다 다음 면접 준비나 포트폴리오 보완을 해두는 편이 실제 운을 살리는 행동입니다.'
+      },
+      '000010': {
+        name: '지뢰복 (地雷復)',
+        summary: '돌아옴과 회복의 괘입니다. 다시 시작할 기회가 오고 있습니다.',
+        core: '한동안 막혔던 일, 멀어진 관계, 흐트러진 생활 리듬이 천천히 제자리로 돌아오려는 흐름입니다. 큰 도약보다 바른 방향으로의 복귀가 우선입니다.',
+        situation: '실수 후 수습, 건강 회복, 재도전, 관계 재정비, 공부 재시작 같은 장면과 잘 맞습니다. 예전의 실패를 두려워하기보다, 이번에는 더 단단하게 돌아오는 것이 중요합니다.',
+        practical: ['무너졌던 루틴을 작은 단위로 다시 세우세요.', '끊겼던 관계는 화려한 말보다 꾸준하고 진실한 태도로 복원하세요.', '재도전이라면 지난 실패 원인을 구체적으로 기록해 반복을 막으세요.'],
+        actions: ['처음부터 완벽하려 하지 말고 재출발 자체를 성공으로 보세요.', '지금 돌아와야 할 기본이 무엇인지 하나만 정해 먼저 회복하세요.', '회복의 초입에서는 속도보다 지속성이 더 중요합니다.'],
+        example: '시험 준비를 중단했다가 다시 시작하려는 사람이 이 괘를 받았다면, 늦었다고 자책하기보다 생활 리듬과 공부 습관부터 회복하는 것이 가장 맞는 길이라는 의미입니다.'
+      },
+      '101110': {
+        name: '화풍정 (火風鼎)',
+        summary: '재정비와 수준 향상의 괘입니다. 지금의 재료를 더 좋은 그릇으로 바꾸는 흐름입니다.',
+        core: '단순히 유지하는 것을 넘어 질적 전환이 필요한 때입니다. 가진 능력, 관계, 조직, 생활 방식을 한 단계 더 성숙하게 끌어올릴 수 있습니다. 다만 그 과정에서 기존 습관을 일부 바꿔야 합니다.',
+        situation: '커리어 업그레이드, 집 구조 개편, 팀 운영 개선, 자기관리 체계 정비와 잘 어울립니다. 무엇을 버리고 무엇을 살릴지 선택하는 안목이 중요합니다.',
+        practical: ['실력이 있다면 포장과 전달 방식까지 함께 개선하세요.', '반복되는 문제는 사람 탓보다 구조와 방식의 문제인지 점검하세요.', '나를 담는 환경을 정리하면 성과도 함께 달라질 수 있습니다.'],
+        actions: ['낡았지만 익숙한 방식을 과감히 손볼 항목을 정하세요.', '현재 가진 자원으로 가장 큰 개선효과를 낼 지점을 찾아 집중하세요.', '수준을 높이는 결정에는 약간의 불편과 학습이 따른다는 점을 받아들이세요.'],
+        example: '같은 일을 오래 했지만 정체감을 느끼는 직장인이 이 괘를 받았다면, 이직만이 답이 아니라 업무 방식, 브랜딩, 전문성, 협업 구조를 재정비해 질적으로 도약할 수 있다는 의미가 됩니다.'
+      }
+    };
+
+    const HEXAGRAM_ORDER = Object.keys(HEXAGRAMS);
+
+    function buildExpandedReading(base) {
+      return {
+        ...base,
+        practical: [
+          ...base.practical,
+          '주역의 메시지는 막연한 예언보다 태도 교정에 가깝습니다. 오늘 바로 적용할 행동 한 가지로 바꾸어 보세요.',
+          '중요한 문제일수록 기록을 남기며 해석을 현실 행동으로 연결하면 도움이 됩니다.'
+        ],
+        actions: [
+          ...base.actions,
+          '일주일 단위로 상황 변화를 점검하면서 같은 질문을 반복하기보다 행동 결과를 먼저 확인하세요.',
+          '지금의 조언이 내 감정만 위로하는지, 실제 행동을 바꾸는지 점검하세요.'
+        ],
+        example: `${base.example} 또한 이 괘는 결과를 단번에 단정하기보다, 현재의 선택이 어떤 방향으로 흐름을 바꾸는지 살펴보라는 조언으로 이해하면 더 실용적입니다.`
+      };
+    }
+
+    Object.keys(HEXAGRAMS).forEach(key => {
+      HEXAGRAMS[key] = buildExpandedReading(HEXAGRAMS[key]);
+    });
+
+    function generateFallbackHexagram(binary) {
+      const index = parseInt(binary, 2) % HEXAGRAM_ORDER.length;
+      const base = HEXAGRAMS[HEXAGRAM_ORDER[index]];
+      const yangCount = binary.split('').filter(v => v === '1').length;
+      const yinCount = 6 - yangCount;
+      const balanceText = yangCount > yinCount
+        ? '양의 기운이 더 강해 직접 행동하고 결단하는 쪽으로 흐름이 기울어 있습니다.'
+        : yangCount < yinCount
+          ? '음의 기운이 더 강해 받아들이고 정리하며 축적하는 쪽에 무게가 실립니다.'
+          : '음양이 비슷해 어느 한쪽 극단보다 균형과 조율이 핵심이 됩니다.';
+
+      return {
+        name: `${base.name}의 확장 해석`,
+        summary: `${base.summary} 현재 형세에서는 ${balanceText}`,
+        core: `${base.core} 특히 ${balanceText}`,
+        situation: `${base.situation} 그러므로 지금은 고집보다 조율, 조급함보다 흐름 파악이 중요합니다.`,
+        practical: [...base.practical],
+        actions: [...base.actions],
+        example: `${base.example} 여기에 더해, 현재 괘상은 ${balanceText}`
+      };
+    }
+
+    const DEFAULT_READING = {
+      name: '해석이 필요한 괘',
+      summary: '이 괘는 현재 흐름의 결을 살피고 균형 있게 대응하라는 메시지를 담고 있습니다.',
+      core: '지금의 상황은 단순히 좋다·나쁘다로 나누기보다, 어떤 힘이 커지고 어떤 점을 조심해야 하는지를 함께 읽어야 합니다. 지나친 낙관도 비관도 피하고, 현재의 조건을 정확히 파악하는 것이 핵심입니다.',
+      situation: '현재는 변화의 징후가 있으며, 행동과 기다림의 균형이 중요합니다. 내 의지뿐 아니라 주변 환경, 관계, 타이밍까지 함께 고려해야 보다 안정적인 결과를 얻을 수 있습니다.',
+      practical: ['중요한 결정을 내리기 전 사실과 감정을 분리해서 정리하세요.', '혼자 단정하지 말고 상황을 객관적으로 볼 수 있는 사람의 의견을 참고하세요.', '지금 당장 할 수 있는 가장 현실적인 한 걸음을 먼저 실행하세요.'],
+      actions: ['기회가 보이면 잡되 무리한 확장은 피하세요.', '불확실한 부분은 확인하고, 확인이 끝난 부분부터 차근차근 진행하세요.', '감정이 격해진 상태라면 하루 정도 간격을 두고 다시 판단하세요.'],
+      example: '예를 들어 진로 문제라면, 당장 퇴사나 포기를 결정하기보다 현재의 불만이 환경 문제인지, 역할 문제인지, 성장 한계인지부터 나누어 본 뒤 다음 선택지를 설계하는 방식이 좋습니다.'
+    };
+
+    const tapZone = document.getElementById('tapZone');
+    const autoBtn = document.getElementById('autoBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const progressText = document.getElementById('progressText');
+    const tapInfo = document.getElementById('tapInfo');
+    const tapCount = document.getElementById('tapCount');
+    const hexagramStack = document.getElementById('hexagramStack');
+    const resultCard = document.getElementById('resultCard');
+    const resultBadge = document.getElementById('resultBadge');
+    const hexagramName = document.getElementById('hexagramName');
+    const resultIntro = document.getElementById('resultIntro');
+    const coreReading = document.getElementById('coreReading');
+    const situationMeaning = document.getElementById('situationMeaning');
+    const practicalList = document.getElementById('practicalList');
+    const actionList = document.getElementById('actionList');
+    const exampleText = document.getElementById('exampleText');
+    const changeText = document.getElementById('changeText');
+    const questionInput = document.getElementById('question');
+    const livePreview = document.getElementById('livePreview');
+    const liveLinePreview = document.getElementById('liveLinePreview');
+    const liveLineText = document.getElementById('liveLineText');
+
+    let lines = [];
+    let totalTapCount = 0;
+
+    function tap() {
+      if (lines.length >= 6) return;
+      totalTapCount += 1;
+      tapCount.textContent = totalTapCount;
+      tapZone.classList.add('active');
+      setTimeout(() => tapZone.classList.remove('active'), 120);
+      finalizeLine(false);
+    }
+
+    function finalizeLine(forceRandom = false) {
+      if (lines.length >= 6) return;
+
+      const line = randomLine();
+      lines.push(line);
+      renderLiveLine(line, lines.length);
+      renderLines();
+
+      if (lines.length === 6) {
+        showResult();
+      }
+    }
+
+    function randomLine() {
+      const values = [6, 7, 8, 9];
+      const value = values[Math.floor(Math.random() * values.length)];
+      return mapValueToLine(value);
+    }
+
+    function mapValueToLine(value) {
+      return {
+        value,
+        type: (value === 7 || value === 9) ? 'yang' : 'yin',
+        changing: (value === 6 || value === 9)
+      };
+    }
+
+    function renderLineGraphic(container, line) {
+      if (line.type === 'yang') {
+        container.innerHTML = '<div class="yang-line"></div>';
+      } else {
+        container.innerHTML = '<div class="yin-wrap"><div class="yin-line-left"></div><div class="yin-line-right"></div></div>';
+      }
+
+      if (line.changing) {
+        const mark = document.createElement('div');
+        mark.className = 'changing-mark';
+        mark.textContent = '변';
+        container.appendChild(mark);
+      }
+    }
+
+    function describeLine(line, index) {
+      const lineType = line.type === 'yang' ? '양효' : '음효';
+      const changeType = line.changing ? '변화가 예정된 효입니다.' : '안정적으로 작용하는 효입니다.';
+      return `${index}번째로 뽑힌 효는 ${lineType}이며, ${changeType}`;
+    }
+
+    function renderLiveLine(line, index) {
+      livePreview.style.display = 'block';
+      liveLinePreview.innerHTML = '';
+      renderLineGraphic(liveLinePreview, line);
+      liveLineText.textContent = describeLine(line, index);
+      tapInfo.textContent = `방금 ${index}효를 뽑았습니다`;
+    }
+
+    function renderLines() {
+      progressText.textContent = `현재 효: ${lines.length} / 6`;
+      hexagramStack.innerHTML = '';
+
+      const displayLines = [...lines].reverse();
+      const placeholders = Array.from({ length: 6 - lines.length }, () => null);
+      const combined = [...placeholders, ...displayLines];
+
+      combined.forEach((line, index) => {
+        const row = document.createElement('div');
+        row.className = 'line-row';
+        const label = document.createElement('div');
+        label.className = 'line-label';
+        label.textContent = `${6 - index}효`;
+        const box = document.createElement('div');
+        box.className = 'iching-line';
+
+        if (!line) {
+          box.innerHTML = '<div style="width:88%;height:12px;border-radius:999px;background:rgba(139,94,52,.12);"></div>';
+        } else {
+          renderLineGraphic(box, line);
+        }
+
+        row.appendChild(label);
+        row.appendChild(box);
+        hexagramStack.appendChild(row);
+      });
+    }
+
+    function showResult() {
+      const binary = lines.map(line => line.type === 'yang' ? '1' : '0').join('');
+      const changedBinary = lines.map(line => {
+        if (!line.changing) return line.type === 'yang' ? '1' : '0';
+        return line.type === 'yang' ? '0' : '1';
+      }).join('');
+
+      const reading = HEXAGRAMS[binary] || generateFallbackHexagram(binary);
+      const changedReading = HEXAGRAMS[changedBinary] || generateFallbackHexagram(changedBinary);
+      const question = questionInput.value.trim();
+      const changingLines = lines
+        .map((line, idx) => line.changing ? idx + 1 : null)
+        .filter(Boolean);
+
+      resultBadge.textContent = `본괘: ${binary} / 지괘: ${changedBinary}`;
+      hexagramName.textContent = reading.name;
+      resultIntro.textContent = question
+        ? `질문: “${question}”에 대한 흐름입니다. ${reading.summary}`
+        : reading.summary;
+      coreReading.textContent = reading.core;
+      situationMeaning.textContent = reading.situation;
+      practicalList.innerHTML = reading.practical.map(item => `<li>${item}</li>`).join('');
+      actionList.innerHTML = reading.actions.map(item => `<li>${item}</li>`).join('');
+      exampleText.textContent = reading.example;
+      changeText.textContent = buildChangeText(changingLines, changedReading);
+      resultCard.classList.remove('hidden');
+      resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function buildDynamicReading(binary) {
+      const yangCount = binary.split('').filter(v => v === '1').length;
+      const yinCount = 6 - yangCount;
+      let tone = '';
+      if (yangCount >= 5) {
+        tone = '강한 추진력과 결단이 전면에 드러난 상태입니다. 다만 힘이 강할수록 과속과 독주를 조심해야 합니다.';
+      } else if (yinCount >= 5) {
+        tone = '받아들이고 지켜보는 힘이 큰 상태입니다. 무리하게 판을 흔들기보다 안정과 축적이 중요합니다.';
+      } else {
+        tone = '움직임과 신중함이 섞여 있어, 어느 한쪽으로 치우치지 않는 균형 감각이 필요합니다.';
+      }
+
+      return {
+        ...DEFAULT_READING,
+        name: `형세 해석 괘 (${binary})`,
+        summary: tone,
+        core: `${tone} ${DEFAULT_READING.core}`,
+        situation: `${DEFAULT_READING.situation} 특히 지금은 ${yangCount > yinCount ? '직접 행동하는 힘' : yangCount < yinCount ? '기다리며 다지는 힘' : '행동과 관찰의 균형'}이 중요하게 작용합니다.`
+      };
+    }
+
+    function buildChangeText(changingLines, changedReading) {
+      if (!changingLines.length) {
+        return '변효가 없으므로 현재의 흐름이 비교적 안정적으로 이어질 가능성이 큽니다. 지금 받은 메시지를 그대로 깊게 적용하는 것이 중요합니다.';
+      }
+      return `변효는 ${changingLines.join(', ')}효에 나타났습니다. 이는 현재 상황이 고정되어 있지 않고, 선택과 태도에 따라 방향이 달라질 수 있음을 뜻합니다. 변화를 거친 뒤의 흐름은 “${changedReading.name}”의 성격을 띱니다. 즉, 지금의 문제를 다루는 과정에서 최종적으로는 ${changedReading.summary}라는 방향으로 옮겨갈 가능성이 큽니다. 지금 당장은 눈앞의 감정이나 사건만 보지 말고, 그 변화가 어디로 이어지는지까지 함께 생각하는 것이 좋습니다.`;
+    }
+
+    function resetAll() {
+      lines = [];
+      totalTapCount = 0;
+      tapCount.textContent = '0';
+      tapInfo.textContent = '탭 1번 = 효 1개';
+      progressText.textContent = '현재 효: 0 / 6';
+      livePreview.style.display = 'none';
+      liveLinePreview.innerHTML = '';
+      liveLineText.textContent = '';
+      resultCard.classList.add('hidden');
+      renderLines();
+    }
+
+    tapZone.addEventListener('click', tap);
+    autoBtn.addEventListener('click', () => {
+      while (lines.length < 6) finalizeLine(true);
+    });
+    resetBtn.addEventListener('click', resetAll);
+
+    renderLines();
+  </script>
+</body>
+</html>
