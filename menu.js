@@ -8,7 +8,8 @@ const MENU_ITEMS = [
   { id: 'about',    key: 'menu.about',    glyph: '☯', href: 'about.html' },
   { id: 'list',     key: 'menu.list',     glyph: '☰', href: 'hexagram-list.html' },
   { id: 'vault',    key: 'menu.vault',    glyph: '☷', action: 'vault' },
-  { id: 'settings', key: 'menu.settings', glyph: '⚙', action: 'settings' }
+  { id: 'settings', key: 'menu.settings', glyph: '⚙', action: 'settings' },
+  { id: 'contact',  key: 'menu.contact',  glyph: '✉', href: 'mailto:mubig864@gmail.com' }
 ];
 
 (function () {
@@ -41,6 +42,11 @@ const MENU_ITEMS = [
     const glyph = el('span', 'drawer-glyph', { 'aria-hidden': 'true' });
     glyph.textContent = item.glyph;
     const label = el('span', null, { 'data-i18n': item.key });
+    // i18n 키가 없는 '연락하기'의 경우 직접 텍스트를 채우도록 처리
+    if (item.id === 'contact') {
+      label.removeAttribute('data-i18n');
+      label.textContent = 'mubig864@gmail.com';
+    }
     node.append(glyph, label);
     if (item.action) node.addEventListener('click', () => { closeDrawer(false); openSheet(item.action); });
     li.appendChild(node);
