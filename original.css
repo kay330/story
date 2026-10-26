@@ -68,7 +68,7 @@
     }
 
 .stalk-split-marker::after {
-      content: '가르는 위치';
+      content: attr(data-label);
       position: absolute;
       left: 50%;
       bottom: -2px;

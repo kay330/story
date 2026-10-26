@@ -7,9 +7,9 @@ let pointerDownAt = 0;
 const DRAW_DURATION_TAP = 2800;   // 탭 1회당 효가 결정되기까지의 시간(ms)
 const DRAW_DURATION_AUTO = 1600;  // 자동 뽑기 시 효 1개당 시간(ms)
 const RESULT_DELAY = 1300;        // 6번째 효 확정 후 결과 공개까지의 뜸(ms)
-const PHASE_MESSAGES = ['마음을 가다듬는 중…', '기운을 모으는 중…', '효가 모습을 드러냅니다…'];
+const PHASE_KEYS = ['tap.phase1', 'tap.phase2', 'tap.phase3'];
 const tapMsgEl = tapZone.querySelector('.tap-instruction > div:not(.tap-count)');
-const tapMsgOriginal = tapMsgEl ? tapMsgEl.textContent : '';
+const tapMsgOriginal = () => t('tap.hint');   // 언어에 맞는 기본 안내 문구
 
 function startDrawEffects() {
   tapZone.classList.add('drawing');
@@ -22,7 +22,7 @@ function startDrawEffects() {
   livePreview.style.display = 'block';
   liveLinePreview.classList.remove('reveal');
   liveLinePreview.classList.add('shuffling');
-  tapInfo.textContent = '효를 뽑는 중입니다…';
+  tapInfo.textContent = t('tap.drawing');
   // 다음에 채워질 칸 강조
   const nextRow = hexagramStack.children[5 - lines.length];
   if (nextRow) nextRow.classList.add('slot-pulse');
@@ -33,7 +33,7 @@ function stopDrawEffects() {
   tapZone.querySelectorAll('.draw-ring, .tap-burst').forEach(el => el.remove());
   liveLinePreview.classList.remove('shuffling');
   hexagramStack.querySelectorAll('.slot-pulse').forEach(el => el.classList.remove('slot-pulse'));
-  if (tapMsgEl) tapMsgEl.textContent = tapMsgOriginal;
+  if (tapMsgEl) tapMsgEl.textContent = tapMsgOriginal();
 }
 
 // 효 하나를 극적으로 뽑는다. 취소되면 false 반환.
@@ -41,7 +41,7 @@ async function drawLineDramatic(duration) {
   const myRun = drawRun;
   const finalLine = randomLine();
   startDrawEffects();
-  liveLineText.textContent = '효가 정해지고 있습니다…';
+  liveLineText.textContent = t('tap.deciding');
 
   const shuffleTime = duration * 0.85;
   const start = Date.now();
@@ -51,9 +51,9 @@ async function drawLineDramatic(duration) {
   // 1) 셔플 구간: 양/음이 빠르게 바뀌다가 점점 느려짐
   while (Date.now() - start < shuffleTime) {
     const progress = (Date.now() - start) / shuffleTime;
-    const phase = Math.min(PHASE_MESSAGES.length - 1, Math.floor(progress * PHASE_MESSAGES.length));
+    const phase = Math.min(PHASE_KEYS.length - 1, Math.floor(progress * PHASE_KEYS.length));
     if (phase !== lastPhase && tapMsgEl) {
-      tapMsgEl.textContent = PHASE_MESSAGES[phase];
+      tapMsgEl.textContent = t(PHASE_KEYS[phase]);
       lastPhase = phase;
     }
     const fake = mapValueToLine([7, 8][Math.floor(Math.random() * 2)]);
@@ -89,7 +89,7 @@ async function drawLineDramatic(duration) {
 
   tapZone.classList.remove('drawing');
   tapZone.querySelectorAll('.draw-ring').forEach(el => el.remove());
-  if (tapMsgEl) tapMsgEl.textContent = tapMsgOriginal;
+  if (tapMsgEl) tapMsgEl.textContent = tapMsgOriginal();
   await sleep(900);
   if (myRun !== drawRun) return false;
   burst.remove();
@@ -101,11 +101,11 @@ async function revealResultDramatic() {
   const myRun = drawRun;
   tapZone.classList.add('finale');
   vibrate([60, 80, 60, 80, 120]);
-  if (tapMsgEl) tapMsgEl.textContent = '여섯 효가 모두 정해졌습니다…';
+  if (tapMsgEl) tapMsgEl.textContent = t('tap.allSet');
   await sleep(RESULT_DELAY);
   if (myRun !== drawRun) return;
   tapZone.classList.remove('finale');
-  if (tapMsgEl) tapMsgEl.textContent = tapMsgOriginal;
+  if (tapMsgEl) tapMsgEl.textContent = tapMsgOriginal();
   showResult();
 }
 
@@ -157,7 +157,7 @@ function resetAll() {
   liveLinePreview.style.opacity = '';
   totalTapCount = 0;
   tapCount.textContent = '0';
-  resetCommon('탭 1번 = 효 1개');
+  resetCommon();
 }
 
 // 터치 입력(시각, 좌표, 누른 시간)을 난수 해시에 누적

@@ -1,12 +1,14 @@
 'use strict';
 /* 서시법(original.html) 전용 — core.js, hexagrams.js 다음에 로드 */
 let totalTapCount = 0;
+PAGE_METHOD = 'yarrow';              // 보관함 기록에 '서시법'으로 표시
+tapDefaultKey = 'tap.infoOriginal';  // 안내 문구 번역 키
 
 const DRAW_DURATION_TAP = 2000;
 const DRAW_DURATION_AUTO = 600;
 const RESULT_DELAY = 1000;
 const tapMsgEl = document.getElementById('tapMainInstruction');
-const tapMsgOriginal = tapMsgEl ? tapMsgEl.textContent : '';
+const tapMsgOriginal = () => t('orig.splitMsg');   // 언어에 맞는 기본 안내 문구
 
 function startDrawEffects() {
   tapZone.classList.add('drawing');
@@ -19,7 +21,7 @@ function startDrawEffects() {
   livePreview.style.display = 'block';
   liveLinePreview.classList.remove('reveal');
   liveLinePreview.innerHTML = '';
-  tapInfo.textContent = '효를 뽑는 중입니다…';
+  tapInfo.textContent = t('tap.drawing');
   const nextRow = hexagramStack.children[5 - lines.length];
   if (nextRow) nextRow.classList.add('slot-pulse');
 }
@@ -30,16 +32,10 @@ function stopDrawEffects() {
   liveLinePreview.classList.remove('shuffling');
   clearStalkStage();
   hexagramStack.querySelectorAll('.slot-pulse').forEach(el => el.classList.remove('slot-pulse'));
-  if (tapMsgEl) tapMsgEl.textContent = tapMsgOriginal;
+  if (tapMsgEl) tapMsgEl.textContent = tapMsgOriginal();
 }
 
 const STALK_TOTAL = 49;
-const VALUE_LABELS = {
-  6: { name: '노음(老陰)', note: '변하는 음' },
-  7: { name: '소양(少陽)', note: '안정된 양' },
-  8: { name: '소음(少陰)', note: '안정된 음' },
-  9: { name: '노양(老陽)', note: '변하는 양' }
-};
 
 // 가르기: ratio(0~1) → 왼쪽 무리 개수 L. 4로 나눈 나머지가 고르게 나오도록 L을 4의 배수 폭 안에서 고른다
 // (이렇게 해야 6:7:8:9 = 1:5:7:3 의 전통 확률이 정확히 재현된다). R은 항상 4 이상이라 掛一 후에도 남는다.
@@ -91,7 +87,7 @@ async function playYarrow(cast, d, myRun, firstRatio, interactive = false) {
   tray.style.top = trayTop + 'px';
   tray.style.height = trayH + 'px';
   const trayText = mk('stalk-tray-text', tray);
-  trayText.textContent = '덜어낸 서죽 0';
+  trayText.textContent = t('orig.tray', { n: 0 });
 
   const caption = mk('stalk-caption');
   const stepsEl = mk('stalk-steps');
@@ -163,7 +159,7 @@ async function playYarrow(cast, d, myRun, firstRatio, interactive = false) {
   let active = sticks.map((_, i) => i);
   let removedCount = 0;
 
-  say('大衍之數 · 오십에서 하나를 덜어 마흔아홉을 씁니다');
+  say(t('orig.cap0'));
   layoutRow(active, 10);
   if (!(await wait(0.4))) return false;
 
@@ -185,14 +181,14 @@ async function playYarrow(cast, d, myRun, firstRatio, interactive = false) {
     const s = computeSplit(active.length, ratio);
     cast.rounds.push(s);
     stepDots.forEach((dot, i) => { dot.className = i < r ? 'done' : (i === r ? 'active' : ''); });
-    liveLineText.textContent = `${r + 1}변 진행 중 · 서죽 ${active.length}개`;
+    liveLineText.textContent = t('orig.roundNow', { r: r + 1, n: active.length });
 
     const startX = (W - (active.length * sp + gap)) / 2;
     const leftIds = active.slice(0, s.L);
     const rightIds = active.slice(s.L);
     const rightStart = startX + s.L * sp + gap;
 
-    say(`${r + 1}변 · 分二 — 서죽을 둘로 나눕니다`);
+    say(t('orig.cap1', { r: r + 1 }));
     leftIds.forEach((id, i) => setPos(id, startX + i * sp, rowY));
     rightIds.forEach((id, i) => setPos(id, rightStart + i * sp, rowY));
     showTag(tagL, `天 ${s.L}`, startX + (s.L * sp) / 2, rowY - 26);
@@ -202,7 +198,7 @@ async function playYarrow(cast, d, myRun, firstRatio, interactive = false) {
     const hungId = rightIds[0];
     const rightRest = rightIds.slice(1);
     const gapCx = startX + s.L * sp + gap / 2;
-    say(`${r + 1}변 · 掛一 — 하나를 걸어 둡니다`);
+    say(t('orig.cap2', { r: r + 1 }));
     if (sticks[hungId]) sticks[hungId].classList.add('hung');
     setPos(hungId, gapCx - sw / 2, rowY - sh * 0.42);
     rightRest.forEach((id, i) => setPos(id, rightStart + i * sp, rowY));
@@ -210,7 +206,7 @@ async function playYarrow(cast, d, myRun, firstRatio, interactive = false) {
     showTag(tagH, '人', gapCx + 14, rowY - sh * 0.42);
     if (!(await wait(0.2))) return false;
 
-    say(`${r + 1}변 · 揲四 — 넷씩 헤아립니다`);
+    say(t('orig.cap3', { r: r + 1 }));
     const remL = leftIds.slice(s.L - s.remL);
     const remR = rightRest.slice(0, s.remR);
     const quartL = chunk(leftIds.slice(0, s.L - s.remL), 4);
@@ -227,7 +223,7 @@ async function playYarrow(cast, d, myRun, firstRatio, interactive = false) {
     await sleep(tick);
     if (!alive()) return false;
 
-    say(`${r + 1}변 · 歸奇 — 걸어 둔 것과 남은 것을 덜어냅니다`);
+    say(t('orig.cap4', { r: r + 1 }));
     hideTags();
     [hungId, ...remL, ...remR].forEach(id => {
       const el = sticks[id];
@@ -237,12 +233,12 @@ async function playYarrow(cast, d, myRun, firstRatio, interactive = false) {
       setPos(id, trayRight - removedCount * sp, trayStickTop);
       removedCount++;
     });
-    trayText.textContent = `덜어낸 서죽 ${removedCount}`;
+    trayText.textContent = t('orig.tray', { n: removedCount });
     active = [...leftIds.slice(0, s.L - s.remL), ...rightRest.slice(s.remR)];
     lastRoundRemoved = STALK_TOTAL - active.length;
     layoutRow(active);
     if (!(await wait(0.25))) return false;
-    say(`${r + 1}변 끝 — 남은 서죽 ${active.length}개`);
+    say(t('orig.cap5', { r: r + 1, n: active.length }));
     stepDots[r].className = 'done';
     if (!(await wait(0.15))) return false;
   }
@@ -250,11 +246,11 @@ async function playYarrow(cast, d, myRun, firstRatio, interactive = false) {
   stepsEl.classList.add('hide');
   const value = active.length / 4;
   cast.value = value;
-  const info = VALUE_LABELS[value] || { name: '효', note: '' };
+  const valueLabel = I18N.ko['orig.val' + value] ? t('orig.val' + value) : t('orig.valDefault');
   const cg = value > 1 ? Math.min(16, Math.max(6, (W * 0.9 - active.length * sp) / (value - 1))) : 0;
   const totalW = active.length * sp + (value - 1) * cg;
   const fx0 = (W - totalW) / 2;
-  say(`남은 ${active.length}개를 넷씩 묶습니다`);
+  say(t('orig.cap6', { n: active.length }));
   active.forEach((id, i) => setPos(id, fx0 + i * sp + Math.floor(i / 4) * cg, rowY));
   if (!(await wait(0.3))) return false;
 
@@ -267,7 +263,7 @@ async function playYarrow(cast, d, myRun, firstRatio, interactive = false) {
     await sleep((d * 0.3) / groups.length);
     if (!alive()) return false;
   }
-  result.innerHTML = `<b>${value}</b><small>${info.name} · ${info.note}</small>`;
+  result.innerHTML = `<b>${value}</b><small>${valueLabel}</small>`;
   result.classList.add('final');
   say(`${active.length} ÷ 4 = ${value}`);
   if (!(await wait(0.2))) return false;
@@ -281,8 +277,8 @@ async function drawLineDramatic(duration, ratios) {
   const interactive = duration === DRAW_DURATION_TAP && !!(ratios && Number.isFinite(ratios[0]));
   let finalLine;
   startDrawEffects();
-  liveLineText.textContent = '서죽을 손에 쥡니다…';
-  if (tapMsgEl) tapMsgEl.textContent = '서죽을 나누는 중…';
+  liveLineText.textContent = t('orig.takeUp');
+  if (tapMsgEl) tapMsgEl.textContent = t('orig.dividing');
 
   const played = await playYarrow(cast, duration, myRun, firstRatio, interactive);
   if (!played || myRun !== drawRun) return false;
@@ -306,7 +302,7 @@ async function drawLineDramatic(duration, ratios) {
 
   tapZone.classList.remove('drawing', 'waiting-split');
   tapZone.querySelectorAll('.draw-ring').forEach(el => el.remove());
-  if (tapMsgEl) tapMsgEl.textContent = tapMsgOriginal;
+  if (tapMsgEl) tapMsgEl.textContent = tapMsgOriginal();
   await sleep(500);
   if (myRun !== drawRun) return false;
   burst.remove();
@@ -318,11 +314,11 @@ async function revealResultDramatic() {
   const myRun = drawRun;
   tapZone.classList.add('finale');
   vibrate([60, 80, 60, 80, 120]);
-  if (tapMsgEl) tapMsgEl.textContent = '여섯 효가 모두 정해졌습니다…';
+  if (tapMsgEl) tapMsgEl.textContent = t('tap.allSet');
   await sleep(RESULT_DELAY);
   if (myRun !== drawRun) return;
   tapZone.classList.remove('finale');
-  if (tapMsgEl) tapMsgEl.textContent = tapMsgOriginal;
+  if (tapMsgEl) tapMsgEl.textContent = tapMsgOriginal();
   showResult();
 }
 
@@ -340,7 +336,7 @@ async function tap() {
   busy = false;
   autoBtn.disabled = false;
   if (ok && lines.length < 6) {
-    splitProgressEl.textContent = '가르기 진행: 1/3';
+    splitProgressEl.textContent = t('orig.progress', { n: 1 });
     swipeInstruction.textContent = ''; 
   }
   if (ok && lines.length === 6) {
@@ -354,7 +350,7 @@ async function autoDraw() {
   if (lines.length >= 6 || busy) return;
   pendingSplitRatios = [];
   gestureRatios = null;
-  splitProgressEl.textContent = '가르기 진행: 1/3';
+  splitProgressEl.textContent = t('orig.progress', { n: 1 });
   busy = true;
   const myRun = drawRun;
   autoBtn.disabled = true;
@@ -386,11 +382,11 @@ function resetAll() {
   if (splitWaiter) { splitWaiter(null); splitWaiter = null; }
   previewStalkCount = 49;
   lastRoundRemoved = 0;
-  splitProgressEl.textContent = '가르기 진행: 1/3';
+  splitProgressEl.textContent = t('orig.progress', { n: 1 });
   swipeInstruction.textContent = '';
   const r = stalkPreview.getBoundingClientRect();
   updateSplitPreview(r.left + r.width / 2);
-  resetCommon('서죽이 나타날 때마다 좌우로 가르세요');
+  resetCommon();
 }
 
 let lastTouch = null;
@@ -421,8 +417,8 @@ function updateSplitPreview(clientX) {
   const ratio = splitRatioAt(clientX);
   stalkSplitMarker.style.left = (ratio * 100) + '%';
   const leftCount = computeSplit(previewStalkCount, ratio).L;
-  leftPreviewCount.textContent = `왼쪽 ${leftCount}개`;
-  rightPreviewCount.textContent = `오른쪽 ${previewStalkCount - leftCount}개`;
+  leftPreviewCount.textContent = t('orig.leftN', { n: leftCount });
+  rightPreviewCount.textContent = t('orig.rightN', { n: previewStalkCount - leftCount });
   const sticks = stalkPreview.querySelectorAll('.preview-stalk');
   const availableWidth = Math.min(560, Math.max(120, (stalkPreview.parentElement ? stalkPreview.parentElement.clientWidth : 320) - 36));
   const targetWidth = Math.min(availableWidth, Math.max(120, previewStalkCount * 9 + 24));
@@ -454,8 +450,8 @@ function waitForUserSplit(roundIndex) {
   tapZone.classList.remove('stage-on');
   tapZone.classList.add('waiting-split');
   previewStalkCount = Math.max(2, 49 - (lastRoundRemoved || 0));
-  swipeInstruction.textContent = `${roundIndex + 1}번째 가르기 · 아래 서죽을 좌우로 드래그하고 놓으세요.`;
-  splitProgressEl.textContent = `가르기 진행: ${roundIndex + 1}/3`;
+  swipeInstruction.textContent = t('orig.dragInfo', { n: roundIndex + 1 });
+  splitProgressEl.textContent = t('orig.progress', { n: roundIndex + 1 });
   const rect = stalkPreview.getBoundingClientRect();
   updateSplitPreview(rect.left + rect.width / 2);
   return new Promise(resolve => { splitWaiter = resolve; });
@@ -490,13 +486,13 @@ stalkPreview.addEventListener('pointerup', e => {
     const resolve = splitWaiter;
     splitWaiter = null;
     resolve(ratio);
-    splitProgressEl.textContent = `가르기 진행: ${Math.min(3, Number((splitProgressEl.textContent.match(/(\d+)\/3/) || [0,1])[1]) + 1)}/3`;
-    swipeInstruction.textContent = '서죽이 갈라졌습니다. 움직임을 지켜보세요…';
+    splitProgressEl.textContent = t('orig.progress', { n: Math.min(3, Number((splitProgressEl.textContent.match(/(\d+)\/3/) || [0,1])[1]) + 1) });
+    swipeInstruction.textContent = t('orig.splitDone');
   } else if (!busy) {
     gestureRatios = [ratio];
     pendingSplitRatios = [];
-    splitProgressEl.textContent = '가르기 진행: 1/3';
-    swipeInstruction.textContent = '첫 번째 변을 계산합니다. 다음 변에서는 다시 직접 가르세요.';
+    splitProgressEl.textContent = t('orig.progress', { n: 1 });
+    swipeInstruction.textContent = t('orig.firstCalc');
     tap();
   }
 });
@@ -517,4 +513,16 @@ tapZone.addEventListener('keydown', e => {
 autoBtn.addEventListener('click', autoDraw);
 resetBtn.addEventListener('click', resetAll);
 
+// 언어가 바뀔 때 이 페이지의 동적 문구 갱신 (가르는 위치 라벨, 좌우 개수, 진행 표시)
+function refreshOriginalText() {
+  stalkSplitMarker.dataset.label = t('orig.splitHere');
+  const n = Number((splitProgressEl.textContent.match(/(\d+)\/3/) || [0, 1])[1]);
+  splitProgressEl.textContent = t('orig.progress', { n });
+  if (stalkSplitMarker.style.left) {            // 한 번이라도 가르기를 움직였다면 좌우 개수도 다시 표시
+    const r = stalkPreview.getBoundingClientRect();
+    updateSplitPreview(r.left + r.width * (parseFloat(stalkSplitMarker.style.left) / 100));
+  }
+}
+onLangChange(refreshOriginalText);
+refreshOriginalText();
 renderLines();

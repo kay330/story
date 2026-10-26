@@ -1,5 +1,6 @@
 'use strict';
-/* 공통 로직 — index.html(간편)·original.html(서시법) 공용. hexagrams.js 다음에 로드 */
+/* 공통 로직 — index.html(간편)·original.html(서시법)·준비중 페이지 공용.
+   로드 순서: hexagrams.js → hexagrams_en.js → i18n.js → store.js → core.js → menu.js → (페이지별 js) */
 
 // ===== DOM =====
 const $ = id => document.getElementById(id);
@@ -28,11 +29,17 @@ const questionInput = $('question');
 const livePreview = $('livePreview');
 const liveLinePreview = $('liveLinePreview');
 const liveLineText = $('liveLineText');
+const saveBtn = $('saveBtn');
+const langNote = $('langNote');
+const savedBanner = $('savedBanner');
 
 // ===== 공유 상태 =====
 let lines = [];       // 아래(1효)부터 위(6효) 순서
 let drawRun = 0;      // 리셋 시 진행 중인 연출을 취소하기 위한 토큰
 let busy = false;     // 연출 진행 중 중복 입력 방지
+let PAGE_METHOD = 'simple';   // 'simple'(index.html) | 'yarrow'(original.html) — 보관함 기록에 쓰임
+let tapDefaultKey = 'tap.info';  // 안내 문구 번역 키 (original.js가 바꿈)
+let currentResult = null;    // 지금 화면에 보이는 결과 { values, question, method, savedId, savedAt }
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 function vibrate(pattern) {
@@ -118,15 +125,17 @@ function renderLineGraphic(container, line) {
   if (line.changing) {
     const mark = document.createElement('div');
     mark.className = 'changing-mark';
-    mark.textContent = '변';
+    mark.textContent = getLang() === 'en' ? '↻' : '변';
     container.appendChild(mark);
   }
 }
 
 function describeLine(line, index) {
-  const lineType = line.type === 'yang' ? '양효' : '음효';
-  const changeType = line.changing ? '변화가 예정된 효입니다.' : '안정적으로 작용하는 효입니다.';
-  return `${index}번째로 뽑힌 효는 ${lineType}이며, ${changeType}`;
+  return t('line.desc', {
+    i: index,
+    type: t(line.type === 'yang' ? 'line.yang' : 'line.yin'),
+    change: t(line.changing ? 'line.changing' : 'line.stable')
+  });
 }
 
 function renderLiveLine(line, index) {
@@ -134,11 +143,11 @@ function renderLiveLine(line, index) {
   liveLinePreview.innerHTML = '';
   renderLineGraphic(liveLinePreview, line);
   liveLineText.textContent = describeLine(line, index);
-  tapInfo.textContent = `${index} 번째 효를 뽑았습니다`;
+  tapInfo.textContent = t('line.drawn', { i: index });
 }
 
 function renderLines() {
-  progressText.textContent = `현재 효: ${lines.length} / 6`;
+  progressText.textContent = t('progress', { n: lines.length });
   const frag = document.createDocumentFragment();
   const combined = [...Array(6 - lines.length).fill(null), ...[...lines].reverse()];
   combined.forEach((line, index) => {
@@ -146,7 +155,7 @@ function renderLines() {
     row.className = 'line-row';
     const label = document.createElement('div');
     label.className = 'line-label';
-    label.textContent = `${6 - index}효`;
+    label.textContent = t('line.label', { n: 6 - index });
     const box = document.createElement('div');
     box.className = 'iching-line';
     if (line) renderLineGraphic(box, line);
@@ -157,17 +166,51 @@ function renderLines() {
   hexagramStack.replaceChildren(frag);
 }
 
-// ===== 결과 =====
+function refreshTapInfo() {
+  tapInfo.textContent = lines.length ? t('line.drawn', { i: lines.length }) : t(tapDefaultKey);
+}
+
+// ===== 괘 데이터 (언어별) =====
+// 영어 데이터(HEXAGRAMS_EN)에 채워진 필드는 영어로, 비어 있는 필드는 한국어로 대체한다.
+function readingOf(binary) {
+  const base = HEXAGRAMS[binary];
+  if (getLang() === 'en' && typeof HEXAGRAMS_EN !== 'undefined' && HEXAGRAMS_EN[binary]) {
+    const en = HEXAGRAMS_EN[binary];
+    return { ...base, ...en, _detailInEnglish: !!(en.core && en.situation && en.example && en.actions && en.practical) };
+  }
+  return { ...base, _detailInEnglish: true };
+}
+
+const shortName = n => n.split(' (')[0];
 const sentence = s => /[.!?]$/.test(s) ? s : s + '.';
+
+// 뽑은 효 값(6~9) 6개 → 본괘/지괘 계산
+function analyzeValues(values) {
+  const lineList = values.map(mapValueToLine);
+  const bit = l => (l.type === 'yang' ? '1' : '0');
+  const binary = lineList.map(bit).join('');
+  const changedLines = lineList.map(l => mapValueToLine(l.changing ? (l.type === 'yang' ? 8 : 7) : l.value));
+  const changedBinary = changedLines.map(bit).join('');
+  const changingIdx = lineList.map((l, i) => (l.changing ? i : -1)).filter(i => i >= 0);
+  return {
+    lineList, changedLines, binary, changedBinary, changingIdx,
+    reading: readingOf(binary), changed: readingOf(changedBinary)
+  };
+}
+
+// ===== 결과 =====
 const TRIGRAMS = {
-  '111': ['☰', '하늘'], '110': ['☱', '연못'], '101': ['☲', '불'], '100': ['☳', '우레'],
-  '011': ['☴', '바람'], '010': ['☵', '물'], '001': ['☶', '산'], '000': ['☷', '땅']
+  '111': ['☰', 'heaven'], '110': ['☱', 'lake'], '101': ['☲', 'fire'], '100': ['☳', 'thunder'],
+  '011': ['☴', 'wind'], '010': ['☵', 'water'], '001': ['☶', 'mountain'], '000': ['☷', 'earth']
 };
 
 // 괘 이름이 뜻하는 위·아래 자연물 (키는 아래→위 순서이므로 앞 3개가 아래, 뒤 3개가 위)
 function trigramText(binary) {
   const lower = TRIGRAMS[binary.slice(0, 3)], upper = TRIGRAMS[binary.slice(3)];
-  return `위 ${upper[0]} ${upper[1]} · 아래 ${lower[0]} ${lower[1]}`;
+  return t('trigram.line', {
+    u: `${upper[0]} ${t('trigram.' + upper[1])}`,
+    l: `${lower[0]} ${t('trigram.' + lower[1])}`
+  });
 }
 
 // 작은 괘 그림 (위가 6효). highlight: 변하는 효의 인덱스 목록(0 = 1효)
@@ -186,13 +229,12 @@ function miniHexagram(lineList, highlight) {
 function hexFigure(title, name, lineList, highlight) {
   const fig = document.createElement('div');
   fig.className = 'hex-figure';
-  const t = document.createElement('div'); t.className = 'hex-figure-title'; t.textContent = title;
-  const n = document.createElement('div'); n.className = 'hex-figure-name'; n.textContent = name.split(' (')[0];
-  fig.append(t, miniHexagram(lineList, highlight), n);
+  const ti = document.createElement('div'); ti.className = 'hex-figure-title'; ti.textContent = title;
+  const n = document.createElement('div'); n.className = 'hex-figure-name'; n.textContent = shortName(name);
+  fig.append(ti, miniHexagram(lineList, highlight), n);
   return fig;
 }
 
-const shortName = n => n.split(' (')[0];
 // 한글 조사 선택: 마지막 글자의 받침 유무 (ㄹ 받침은 '로' 계열 취급)
 function josa(word, withBatchim, without, rieulSame = false) {
   const c = word.charCodeAt(word.length - 1) - 0xAC00;
@@ -203,71 +245,159 @@ function josa(word, withBatchim, without, rieulSame = false) {
 }
 
 function buildChangeParagraphs(changingIdx, lineList, reading, changed) {
-  if (!changingIdx.length) {
-    return [`바뀌는 효가 없어서 “${shortName(reading.name)}”의 흐름이 큰 변화 없이 이어질 가능성이 큽니다. 위 풀이를 지금 상황에 그대로 적용해 보세요.`];
-  }
-  const fmt = arr => arr.length === 6 ? '여섯 효 모두' : arr.map(i => i + 1).join('·') + '효';
+  const ko = getLang() !== 'en';
+  const fromName = shortName(reading.name), toName = shortName(changed.name);
+  if (!changingIdx.length) return [t('chg.none', { name: fromName })];
+
+  const all = changingIdx.length === 6;
+  const fmt = arr => (ko ? arr.map(i => i + 1).join('·') + '효' : 'line' + (arr.length > 1 ? 's ' : ' ') + arr.map(i => i + 1).join(', '));
   const yang = changingIdx.filter(i => lineList[i].type === 'yang');
   const yin = changingIdx.filter(i => lineList[i].type === 'yin');
   const how = [];
-  if (yang.length) how.push(`${fmt(yang)}${yang.length === 6 ? '의' : '는'} 양이 극에 달해 음으로`);
-  if (yin.length) how.push(`${fmt(yin)}${yin.length === 6 ? '의' : '는'} 음이 극에 달해 양으로`);
-  const out = [
-    `바뀌는 자리는 ${changingIdx.length === 6 ? '여섯 효 모두' : '아래에서부터 세어 ' + fmt(changingIdx)}입니다. ${how.join(', ')} 바뀝니다. 지금 상황이 고정되어 있지 않고, 선택과 태도에 따라 방향이 달라질 수 있다는 뜻입니다.`,
-    `그 결과 “${shortName(reading.name)}”에서 “${shortName(changed.name)}”${josa(shortName(changed.name), '으로', '로', true)} 옮겨 가는 흐름입니다. 지괘 “${shortName(changed.name)}”${josa(shortName(changed.name), '은', '는')} ${sentence(changed.summary)}`,
-    `변화 후의 괘가 권하는 첫 행동은 이렇습니다: ${changed.actions[0]}`
-  ];
-  if (changingIdx.length >= 4) out.push('바뀌는 효가 많을수록 상황이 크게 흔들릴 수 있으니, 지금의 결정은 한 번 더 신중히 살펴보세요.');
+  const fmtOf = arr => (all && ko ? '여섯 효 모두' : fmt(arr));
+  const cap = x => (ko ? x : x.charAt(0).toUpperCase() + x.slice(1));   // 영어는 문장 첫 글자를 대문자로
+  if (yang.length) how.push(cap(t('chg.yang', { list: fmtOf(yang), josa: ko ? (all ? '의' : '는') : '' })));
+  if (yin.length) how.push(cap(t('chg.yin', { list: fmtOf(yin), josa: ko ? (all ? '의' : '는') : '' })));
+  const where = all ? t('chg.whereAll') : t('chg.whereSome', { list: fmt(changingIdx) });
+
+  const out = [t('chg.p1', { where, how: how.join(ko ? ', ' : '; ') })];
+  if (ko) {
+    out.push(t('chg.p2', {
+      from: fromName, to: toName,
+      josa1: josa(toName, '으로', '로', true), josa2: josa(toName, '은', '는'),
+      summary: sentence(changed.summary)
+    }));
+    out.push(t('chg.p3', { action: changed.actions[0] }));
+  } else {
+    out.push(t('chg.p2', { from: fromName, to: toName, keyword: changed.keyword, summary: sentence(changed.summary) }));
+  }
+  if (changingIdx.length >= 4) out.push(t('chg.many'));
   return out;
 }
 
-function showResult() {
-  const bits = line => line.type === 'yang' ? '1' : '0';
-  const binary = lines.map(bits).join('');
-  const changedLines = lines.map(l => mapValueToLine(l.changing ? (l.type === 'yang' ? 8 : 7) : l.value));
-  const changedBinary = changedLines.map(bits).join('');
-  const reading = HEXAGRAMS[binary];
-  const changed = HEXAGRAMS[changedBinary];
-  const question = questionInput.value.trim();
-  const changingIdx = lines.map((l, i) => l.changing ? i : -1).filter(i => i >= 0);
+function setResultCardText(info, question) {
+  const { reading, changed, binary, changingIdx, lineList, changedLines } = info;
+  const en = getLang() === 'en';
 
-  resultBadge.textContent = changingIdx.length
-    ? `바뀌는 효 ${changingIdx.length}개` + (changingIdx.length === 6 ? ' (모두)' : ` (${changingIdx.map(i => i + 1).join(', ')}효)`)
-    : '바뀌는 효 없음';
+  resultBadge.textContent = !changingIdx.length ? t('result.badge.none')
+    : changingIdx.length === 6 ? t('result.badge.all')
+    : t(changingIdx.length === 1 ? 'result.badge.one' : 'result.badge.some', { n: changingIdx.length, list: changingIdx.map(i => i + 1).join(', ') });
   hexagramName.textContent = reading.name;
   trigramNote.textContent = trigramText(binary);
   hexagramKeyword.textContent = reading.keyword;
   resultIntro.textContent = reading.summary;
 
-  const figures = [hexFigure('본괘 (지금)', reading.name, lines, changingIdx)];
+  const figures = [hexFigure(t('result.figNow'), reading.name, lineList, changingIdx)];
   if (changingIdx.length) {
     const arrow = document.createElement('div'); arrow.className = 'hex-arrow'; arrow.textContent = '→';
-    figures.push(arrow, hexFigure('지괘 (변화 후)', changed.name, changedLines, changingIdx));
+    figures.push(arrow, hexFigure(t('result.figAfter'), changed.name, changedLines, changingIdx));
   }
   hexCompare.replaceChildren(...figures);
 
   coreReading.textContent = reading.core;
-  exampleQuestion.textContent = question ? `입력하신 질문: “${question}” — 아래 사례와 비교하며 내 상황에 대입해 보세요.` : '';
+  exampleQuestion.textContent = question ? t('result.questionEcho', { q: question }) : '';
   exampleQuestion.style.display = question ? '' : 'none';
   exampleText.textContent = reading.example;
   situationMeaning.textContent = reading.situation;
-  changeText.replaceChildren(...buildChangeParagraphs(changingIdx, lines, reading, changed).map(t => {
-    const p = document.createElement('p'); p.textContent = t; return p;
+  changeText.replaceChildren(...buildChangeParagraphs(changingIdx, lineList, reading, changed).map(tx => {
+    const p = document.createElement('p'); p.textContent = tx; return p;
   }));
   const toItems = arr => arr.map(item => { const li = document.createElement('li'); li.textContent = item; return li; });
   actionList.replaceChildren(...toItems(reading.actions));
   practicalList.replaceChildren(...toItems(reading.practical));
+  if (langNote) langNote.classList.toggle('hidden', !(en && !reading._detailInEnglish));
+}
+
+function updateSaveButton() {
+  if (!saveBtn) return;
+  const saved = !!(currentResult && currentResult.savedId);
+  saveBtn.disabled = saved;
+  saveBtn.textContent = t(saved ? 'result.saved' : 'result.save');
+  if (savedBanner) {
+    const fromVault = !!(currentResult && currentResult.fromVault);
+    savedBanner.classList.toggle('hidden', !fromVault);
+    if (fromVault) savedBanner.textContent = t('result.fromVault', { date: new Date(currentResult.savedAt).toLocaleString(getLang() === 'en' ? 'en-US' : 'ko-KR', { dateStyle: 'medium', timeStyle: 'short' }) });
+  }
+}
+
+function renderResult() {
+  if (!currentResult || !resultCard) return;
+  setResultCardText(analyzeValues(currentResult.values), currentResult.question);
+  updateSaveButton();
   resultCard.classList.remove('hidden');
+}
+
+function showResult() {
+  currentResult = {
+    values: lines.map(l => l.value),
+    question: questionInput ? questionInput.value.trim() : '',
+    method: PAGE_METHOD,
+    savedId: null
+  };
+  renderResult();
   setTimeout(() => resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
 }
 
+// ===== 보관함 연동 =====
+function showToast(message) {
+  let box = document.getElementById('toast');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'toast';
+    box.className = 'toast';
+    box.setAttribute('role', 'status');
+    document.body.appendChild(box);
+  }
+  box.textContent = message;
+  box.classList.add('show');
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(() => box.classList.remove('show'), 2200);
+}
+
+function saveCurrentResult() {
+  if (!currentResult || currentResult.savedId) return;
+  const res = vaultAdd({ values: currentResult.values, question: currentResult.question, method: currentResult.method });
+  currentResult.savedId = res.id;
+  updateSaveButton();
+  showToast(t(res.ok ? 'result.savedToast' : 'result.saveFail'));
+}
+if (saveBtn) saveBtn.addEventListener('click', saveCurrentResult);
+
+// 보관함에서 선택한 기록을 결과 카드로 다시 보여준다
+function renderSavedReading(id) {
+  const rec = vaultGet(id);
+  if (!rec || !resultCard) return false;
+  currentResult = { values: rec.values, question: rec.question, method: rec.method, savedId: rec.id, savedAt: rec.savedAt, fromVault: true };
+  renderResult();
+  setTimeout(() => resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  return true;
+}
+
+// 주소의 #view=기록ID 를 처리 (다른 페이지에서 보관함 항목을 눌렀을 때)
+function handleViewHash() {
+  const m = /^#view=([\w-]+)$/.exec(location.hash);
+  if (!m) return;
+  renderSavedReading(m[1]);
+  try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+}
+
 // 페이지별 resetAll()이 공통으로 마무리하는 부분
-function resetCommon(tapInfoText) {
+function resetCommon() {
   lines = [];
-  tapInfo.textContent = tapInfoText;
+  currentResult = null;
+  refreshTapInfo();
   livePreview.style.display = 'none';
   liveLinePreview.innerHTML = '';
   liveLineText.textContent = '';
   resultCard.classList.add('hidden');
   renderLines();
 }
+
+// 언어가 바뀌면 동적으로 만든 부분도 다시 그린다
+onLangChange(() => {
+  if (!tapZone) return;
+  renderLines();
+  refreshTapInfo();
+  if (!busy && lines.length) liveLineText.textContent = describeLine(lines[lines.length - 1], lines.length);
+  if (currentResult) renderResult();
+});
