@@ -177,7 +177,8 @@ const MENU_ITEMS = [
     delete vaultClearBtn.dataset.armed;
 
     records.forEach(rec => {
-      const info = analyzeValues(rec.values);
+      let info;
+      try { info = analyzeValues(rec.values); } catch (e) { console.error('보관함 기록을 표시하지 못했습니다:', e); return; }   // 기록 하나가 이상해도 창은 열리도록
       const li = el('li', 'vault-item');
 
       const mini = el('div', 'vault-mini');

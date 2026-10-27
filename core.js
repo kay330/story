@@ -270,6 +270,7 @@ function buildChangeParagraphs(changingIdx, lineList, reading, changed) {
     out.push(t('chg.p3', { action: changed.actions[0] }));
   } else {
     out.push(t('chg.p2', { from: fromName, to: toName, keyword: changed.keyword, summary: sentence(changed.summary) }));
+    if (changed.actions && changed.actions[0]) out.push(t('chg.p3', { action: changed.actions[0] }));
   }
   if (changingIdx.length >= 4) out.push(t('chg.many'));
   return out;
