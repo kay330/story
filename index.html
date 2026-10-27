@@ -1,24 +1,29 @@
 <!DOCTYPE html>
 <html lang="ko" data-title-key="doc.title.index"><head>
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-5CH5ZKEJT8"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-5CH5ZKEJT8');
-</script>
-  
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#1a110b">
+  <meta name="description" content="주역점으로 현재 상황과 변화의 방향을 살펴보세요.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="192.png">
+  <link rel="apple-touch-icon" href="192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <script src="init.js"></script>
   <title>주역점 앱</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <aside id="pwaInstallBanner" aria-label="앱 설치" style="display:none; margin:12px auto; padding:12px 14px; max-width:900px; border:1px solid #8f5a35; border-radius:12px; background:#2b1d13; color:#f5ebdf;">
+    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+      <div style="flex:1; min-width:180px;">
+        <strong>주역점 앱 설치</strong>
+        <div id="pwaInstallMessage" style="font-size:.9rem; margin-top:4px;">홈 화면에 추가하면 앱처럼 빠르게 열 수 있습니다.</div>
+      </div>
+      <button type="button" id="pwaInstallButton" style="padding:9px 13px; border:0; border-radius:8px; background:#cda078; color:#1a110b; font-weight:700;">설치하기</button>
+      <button type="button" id="pwaInstallClose" aria-label="설치 안내 닫기" style="padding:8px 10px; border:1px solid #8f5a35; border-radius:8px; background:transparent; color:#f5ebdf;">닫기</button>
+    </div>
+  </aside>
   <div class="app">
     <section class="hero">
       <div class="header-top">
@@ -143,4 +148,5 @@
   <script src="core.js"></script>
   <script src="menu.js"></script>
   <script src="index.js"></script>
+  <script src="pwa-install.js"></script>
 </body></html>
