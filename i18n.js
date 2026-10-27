@@ -24,9 +24,13 @@ const I18N = {
     'menu.list': '주역 64괘 설명 보기',
     'menu.vault': '나의 점괘 보관함',
     'menu.settings': '설정',
+    'menu.share': '공유하기',
     'menu.privacy': '개인정보 보호 안내',
     'menu.contact': '문의',
     'menu.loadError': '메뉴 파일(menu.js)을 불러오지 못했습니다.\n1) menu.js, store.js, i18n.js, init.js, hexagrams_en.js 등 새 파일을 index.html과 같은 폴더에 모두 올렸는지\n2) 브라우저 새로고침(Ctrl+Shift+R) 또는 캐시 삭제 후 다시 시도해 주세요.',
+
+    'share.copied': '링크가 복사되었습니다. 원하는 곳에 붙여넣어 전달하세요',
+    'share.manual': '아래 주소를 복사해 전달하세요',
 
     'privacy.title': '개인정보 및 서비스 이용정보 안내',
     'privacy.p1': '본 서비스는 <b>회원가입 절차가 없으며</b>, 이름이나 이메일 등의 개인정보를 일체 수집하지 않습니다.',
@@ -265,9 +269,13 @@ const I18N = {
     'menu.list': 'Browse the 64 Hexagrams',
     'menu.vault': 'My Saved Readings',
     'menu.settings': 'Settings',
+    'menu.share': 'Share',
     'menu.privacy': 'Privacy Notice',
     'menu.contact': 'Contact',
     'menu.loadError': 'Could not load the menu file (menu.js).\n1) Make sure menu.js, store.js, i18n.js, init.js, hexagrams_en.js and the other new files are uploaded to the same folder as index.html.\n2) Hard-refresh your browser (Ctrl+Shift+R) or clear the cache and try again.',
+
+    'share.copied': 'Link copied. Paste it anywhere to share',
+    'share.manual': 'Copy the address below to share',
 
     'privacy.title': 'Privacy & Usage Information',
     'privacy.p1': 'This service <b>has no sign-up</b> and does not collect any personal information such as your name or email.',

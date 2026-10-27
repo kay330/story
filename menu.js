@@ -9,6 +9,7 @@ const MENU_ITEMS = [
   { id: 'list',     key: 'menu.list',     glyph: '☰', href: 'hexagram-list.html' },
   { id: 'vault',    key: 'menu.vault',    glyph: '☷', action: 'vault' },
   { id: 'settings', key: 'menu.settings', glyph: '⚙', action: 'settings' },
+  { id: 'share',    key: 'menu.share',    glyph: '🔗', action: 'share' },
   { id: 'privacy',  key: 'menu.privacy',  glyph: '🔒', action: 'privacy' },
   { id: 'contact',  key: 'menu.contact',  glyph: '✉', href: 'mailto:mubig864@gmail.com' }
 ];
@@ -44,11 +45,42 @@ const MENU_ITEMS = [
     glyph.textContent = item.glyph;
     const label = el('span', null, { 'data-i18n': item.key });
     node.append(glyph, label);
-    if (item.action) node.addEventListener('click', () => { closeDrawer(false); openSheet(item.action); });
+    if (item.action === 'share') node.addEventListener('click', () => { closeDrawer(false); shareApp(); });
+    else if (item.action) node.addEventListener('click', () => { closeDrawer(false); openSheet(item.action); });
     li.appendChild(node);
     list.appendChild(li);
   });
   drawer.append(drawerHead, list);
+
+  // ---------- 공유하기: 앱 주소를 클립보드에 복사 ----------
+  // 어느 페이지에서 눌러도 항상 같은 앱 주소를 복사한다. (#view=… 같은 개인 기록 주소는 포함하지 않음)
+  const SHARE_URL = 'https://kay330.github.io/story/';
+  function shareUrl() { return SHARE_URL; }
+  function toast(msg) {
+    if (typeof showToast === 'function') showToast(msg); else alert(msg);
+  }
+  function copyFallback(text) {
+    // 구형 브라우저·권한이 막힌 환경용
+    const ta = el('textarea', null, { readonly: '', 'aria-hidden': 'true' });
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    ta.remove();
+    return ok;
+  }
+  async function shareApp() {
+    const url = shareUrl();
+    let ok = false;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) { await navigator.clipboard.writeText(url); ok = true; }
+    } catch (e) {}
+    if (!ok) ok = copyFallback(url);
+    if (ok) toast(t('share.copied'));
+    else window.prompt(t('share.manual'), url);   // 복사가 모두 막힌 경우: 직접 복사할 수 있게 주소를 보여 준다
+  }
 
   // ---------- 설정 창 ----------
   const settingsDlg = el('dialog', 'sheet', { 'aria-labelledby': 'settingsTitle' });
