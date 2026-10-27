@@ -393,12 +393,80 @@ textarea::placeholder {
   filter: drop-shadow(0 2px 8px rgba(192,138,90, 0.2));
 }
 
+
+/* ===== 브랜드 Footer ===== */
 .author-footer {
-  margin-top: 18px;
-  padding: 12px 0 4px;
+  margin-top: 36px;
+  padding: 28px 16px 20px;
   text-align: center;
   color: var(--sub);
+  border-top: 1px solid var(--border);
+}
+
+.author-footer .footer-motto {
+  margin: 0;
+  color: var(--text);
+  font-family: "Noto Serif KR", "Batang", serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  line-height: 1.6;
+}
+
+.author-footer .footer-description {
+  margin: 10px 0 22px;
+  color: var(--sub);
+  font-size: 0.88rem;
+  line-height: 1.8;
+  word-break: keep-all;
+}
+
+.author-footer .footer-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  max-width: 200px;
+  margin: 0 auto 18px;
+  color: var(--accent);
   font-size: 0.9rem;
+}
+
+.author-footer .footer-divider::before,
+.author-footer .footer-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.author-footer .footer-copyright {
+  margin: 0;
+  color: var(--sub);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  line-height: 1.6;
+  opacity: 0.85;
+}
+
+@media (max-width: 699px) {
+  .author-footer {
+    margin-top: 28px;
+    padding: 24px 12px 18px;
+  }
+
+  .author-footer .footer-motto {
+    font-size: 1.35rem;
+    letter-spacing: 0.12em;
+  }
+
+  .author-footer .footer-description {
+    font-size: 0.85rem;
+  }
+
+  .author-footer .footer-copyright {
+    font-size: 0.68rem;
+  }
 }
 
 /* ===== 효 뽑기 연출 효과 ===== */
