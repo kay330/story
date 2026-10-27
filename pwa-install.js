@@ -10,6 +10,16 @@
     window.navigator.standalone === true;
   if (isStandalone) return;
 
+  const tr = (k) => (typeof t === "function" ? t(k) : k);
+  let msgKey = "pwa.msg.default";
+  let btnKey = "pwa.install";
+  const render = () => {
+    message.textContent = tr(msgKey);
+    installButton.textContent = tr(btnKey);
+    closeButton.textContent = tr("pwa.close");
+    closeButton.setAttribute("aria-label", tr("pwa.closeAria"));
+  };
+
   const isIOS = /iphone|ipad|ipod/i.test(window.navigator.userAgent) &&
     !window.MSStream;
 
@@ -25,27 +35,29 @@
     event.preventDefault();
     deferredPrompt = event;
     banner.style.display = "block";
-    message.textContent = "홈 화면에 추가해 앱처럼 사용할 수 있습니다.";
+    msgKey = "pwa.msg.prompt";
+    btnKey = "pwa.install";
     installButton.style.display = "inline-block";
-    installButton.textContent = "설치하기";
+    render();
   });
 
   if (isIOS) {
     banner.style.display = "block";
-    message.textContent = "Safari의 공유 버튼을 누른 뒤 ‘홈 화면에 추가’를 선택하세요. iOS에서는 웹사이트가 자동으로 설치를 실행할 수 없습니다.";
+    msgKey = "pwa.msg.ios";
     installButton.style.display = "none";
   } else if (!("onbeforeinstallprompt" in window)) {
     // Keep the prompt available on browsers where installation is manual.
     banner.style.display = "block";
-    message.textContent = "브라우저 메뉴에서 ‘홈 화면에 추가’ 또는 ‘앱 설치’를 선택하세요.";
-    installButton.textContent = "설치 방법";
+    msgKey = "pwa.msg.manual";
+    btnKey = "pwa.howto";
   }
+  render();
+  if (typeof onLangChange === "function") onLangChange(render);
 
   installButton.addEventListener("click", async () => {
     if (!deferredPrompt) {
-      message.textContent = isIOS
-        ? "Safari에서 공유 버튼 → ‘홈 화면에 추가’를 선택하세요."
-        : "브라우저 메뉴(⋮ 또는 공유 메뉴)에서 ‘앱 설치’ 또는 ‘홈 화면에 추가’를 선택하세요.";
+      msgKey = isIOS ? "pwa.msg.helpIos" : "pwa.msg.helpOther";
+      render();
       return;
     }
     deferredPrompt.prompt();

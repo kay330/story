@@ -23,5 +23,9 @@
       "type": "image/png",
       "purpose": "any"
     }
+  ],
+  "categories": [
+    "lifestyle",
+    "books"
   ]
 }
