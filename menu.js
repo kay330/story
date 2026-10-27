@@ -77,16 +77,15 @@ const MENU_ITEMS = [
     '<p class="hint" data-i18n="settings.langHint"></p></div></div>';
 
   // ---------- 개인정보 보호 안내 창 ----------
-  const privacyDlg = el('dialog', 'sheet', { 'aria-labelledby': 'privacyTitle' });
+ const privacyDlg = el('dialog', 'sheet', { 'aria-labelledby': 'privacyTitle' });
   privacyDlg.innerHTML =
     '<div class="sheet-head"><h2 id="privacyTitle">개인정보 및 서비스 이용정보 안내</h2>' +
     '<button type="button" class="icon-btn" data-close data-i18n-aria="settings.close">✕</button></div>' +
-    '<div class="sheet-body" style="line-height: 1.6; font-size: 0.95rem; word-break: keep-all;">' +
-    '<p style="margin-bottom: 12px;">본 서비스는 회원가입이 필요 없으며 이름, 이메일 등 사용자 정보를 수집하지 않습니다.</p>' +
-    '<p style="margin-bottom: 12px;">사용자가 입력한 내용은 본인의 웹브라우저에만 저장되며, 서버에는 저장되지 않습니다.</p>' +
-    '<p style="margin-bottom: 12px;">다만, 서비스 개선을 위해 Google Analytics(GA4)를 사용하여 방문자 수와 페이지 조회 수 등을 분석합니다.</p>' +
-    '<p style="margin-bottom: 12px;">이 과정에서 쿠키 및 기기 정보 등이 처리될 수 있습니다.</p>' +
-    '<p style="margin-bottom: 0;">수집된 이용정보는 통계 목적으로만 활용하며, 개인 식별이나 맞춤형 광고에는 사용하지 않습니다.</p>' +
+    '<div class="sheet-body" style="line-height: 1.7; font-size: 0.92rem; word-break: keep-all;">' +
+    '<p style="margin-bottom: 14px;">본 서비스는 <b>회원가입 절차가 없으며</b>, 이름이나 이메일 등의 개인정보를 일체 수집하지 않습니다.</p>' +
+    '<p style="margin-bottom: 14px;">사용자가 입력하신 모든 내용은 외부 서버로 전송되지 않고, 오직 <b>본인의 웹브라우저에만 안전하게 저장</b>됩니다.</p>' +
+    '<p style="margin-bottom: 14px;">다만, 서비스 개선을 위해 <b>Google Analytics(GA4)</b>를 사용하여 방문자 수와 페이지 조회 수 등의 통계를 분석하며, 이 과정에서 쿠키 및 기기 정보가 처리될 수 있습니다.</p>' +
+    '<p style="margin-bottom: 0;">수집된 이용정보는 <b>오직 통계 목적으로만 활용</b>되며, 개인 식별이나 맞춤형 광고에는 절대 사용되지 않습니다.</p>' +
     '</div>';
 
   // ---------- 보관함 창 ----------
