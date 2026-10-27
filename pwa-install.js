@@ -20,8 +20,11 @@
     closeButton.setAttribute("aria-label", tr("pwa.closeAria"));
   };
 
-  const isIOS = /iphone|ipad|ipod/i.test(window.navigator.userAgent) &&
-    !window.MSStream;
+  const ua = window.navigator.userAgent;
+  const isIOS = /iphone|ipad|ipod/i.test(ua) && !window.MSStream;
+  // 카카오톡·네이버·인스타그램 등 앱 안의 브라우저 (여기서는 홈 화면에 추가할 수 없음)
+  const isInApp = /KAKAOTALK|NAVER\(inapp|Instagram|FBAN|FBAV|FB_IAB|\bLine\/|DaumApps|BAND\//i.test(ua) ||
+    (/Android/i.test(ua) && /;\s*wv\)/.test(ua));
 
   if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
     window.addEventListener("load", () => {
@@ -32,6 +35,7 @@
   }
 
   window.addEventListener("beforeinstallprompt", (event) => {
+    if (isInApp) return;
     event.preventDefault();
     deferredPrompt = event;
     banner.style.display = "block";
@@ -41,7 +45,11 @@
     render();
   });
 
-  if (isIOS) {
+  if (isInApp) {
+    banner.style.display = "block";
+    msgKey = isIOS ? "pwa.msg.inappIos" : "pwa.msg.inappAndroid";
+    installButton.style.display = "none";
+  } else if (isIOS) {
     banner.style.display = "block";
     msgKey = "pwa.msg.ios";
     installButton.style.display = "none";
