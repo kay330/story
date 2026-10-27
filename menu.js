@@ -1,5 +1,5 @@
 'use strict';
-/* 좌측 상단 메뉴(서랍) + 설정 창 + 나의 점괘 보관함 창.
+/* 좌측 상단 메뉴(서랍) + 설정 창 + 나의 점괘 보관함 창 + 개인정보 보호 안내 창.
    모든 페이지에서 공용으로 쓰며, 서랍·창은 이 파일이 body에 직접 만든다.
    요구 사항: 페이지에 #menuBtn 버튼이 있어야 하고, i18n.js · store.js · core.js 다음에 로드한다. */
 
@@ -9,6 +9,7 @@ const MENU_ITEMS = [
   { id: 'list',     key: 'menu.list',     glyph: '☰', href: 'hexagram-list.html' },
   { id: 'vault',    key: 'menu.vault',    glyph: '☷', action: 'vault' },
   { id: 'settings', key: 'menu.settings', glyph: '⚙', action: 'settings' },
+  { id: 'privacy',  key: 'menu.privacy',  glyph: '🔒', action: 'privacy' },
   { id: 'contact',  key: 'menu.contact',  glyph: '✉', href: 'mailto:mubig864@gmail.com' }
 ];
 
@@ -42,11 +43,16 @@ const MENU_ITEMS = [
     const glyph = el('span', 'drawer-glyph', { 'aria-hidden': 'true' });
     glyph.textContent = item.glyph;
     const label = el('span', null, { 'data-i18n': item.key });
-    // i18n 키가 없는 '연락하기'의 경우 직접 텍스트를 채우도록 처리
-    if (item.id === 'contact') {
+    
+    // 다국어 키가 직접 설정되어 있지 않은 특정 항목 처리
+    if (item.id === 'privacy') {
       label.removeAttribute('data-i18n');
-      label.textContent = 'mubig864@gmail.com';
+      label.textContent = '개인정보 보호 안내';
+    } else if (item.id === 'contact') {
+      label.removeAttribute('data-i18n');
+      label.textContent = '문의';
     }
+    
     node.append(glyph, label);
     if (item.action) node.addEventListener('click', () => { closeDrawer(false); openSheet(item.action); });
     li.appendChild(node);
@@ -70,6 +76,19 @@ const MENU_ITEMS = [
     '<button type="button" data-val="en" data-i18n="settings.lang.en"></button></div>' +
     '<p class="hint" data-i18n="settings.langHint"></p></div></div>';
 
+  // ---------- 개인정보 보호 안내 창 ----------
+  const privacyDlg = el('dialog', 'sheet', { 'aria-labelledby': 'privacyTitle' });
+  privacyDlg.innerHTML =
+    '<div class="sheet-head"><h2 id="privacyTitle">개인정보 및 서비스 이용정보 안내</h2>' +
+    '<button type="button" class="icon-btn" data-close data-i18n-aria="settings.close">✕</button></div>' +
+    '<div class="sheet-body" style="line-height: 1.6; font-size: 0.95rem; word-break: keep-all;">' +
+    '<p style="margin-bottom: 12px;">본 서비스는 회원가입이 필요 없으며 이름, 이메일 등 사용자 정보를 수집하지 않습니다.</p>' +
+    '<p style="margin-bottom: 12px;">사용자가 입력한 내용은 본인의 웹브라우저에만 저장되며, 서버에는 저장되지 않습니다.</p>' +
+    '<p style="margin-bottom: 12px;">다만, 서비스 개선을 위해 Google Analytics(GA4)를 사용하여 방문자 수와 페이지 조회 수 등을 분석합니다.</p>' +
+    '<p style="margin-bottom: 12px;">이 과정에서 쿠키 및 기기 정보 등이 처리될 수 있습니다.</p>' +
+    '<p style="margin-bottom: 0;">수집된 이용정보는 통계 목적으로만 활용하며, 개인 식별이나 맞춤형 광고에는 사용하지 않습니다.</p>' +
+    '</div>';
+
   // ---------- 보관함 창 ----------
   const vaultDlg = el('dialog', 'sheet', { 'aria-labelledby': 'vaultTitle' });
   vaultDlg.innerHTML =
@@ -82,7 +101,7 @@ const MENU_ITEMS = [
     '<ul class="vault-list" id="vaultList"></ul>' +
     '<div class="vault-foot"><button type="button" class="ghost" id="vaultClear" data-i18n="vault.clear"></button></div></div>';
 
-  document.body.append(backdrop, drawer, settingsDlg, vaultDlg);
+  document.body.append(backdrop, drawer, settingsDlg, privacyDlg, vaultDlg);
 
   // ---------- 서랍 열고 닫기 ----------
   const appRoot = document.querySelector('.app');
@@ -112,12 +131,18 @@ const MENU_ITEMS = [
 
   // ---------- 창(dialog) 열고 닫기 ----------
   function openSheet(name) {
-    const dlg = name === 'vault' ? vaultDlg : settingsDlg;
-    if (name === 'vault') renderVault();
-    else syncSettingsUI();
+    let dlg = settingsDlg;
+    if (name === 'vault') {
+      dlg = vaultDlg;
+      renderVault();
+    } else if (name === 'privacy') {
+      dlg = privacyDlg;
+    } else {
+      syncSettingsUI();
+    }
     if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
   }
-  [settingsDlg, vaultDlg].forEach(dlg => {
+  [settingsDlg, privacyDlg, vaultDlg].forEach(dlg => {
     dlg.addEventListener('click', e => {
       if (e.target === dlg || e.target.closest('[data-close]')) dlg.close();   // 바깥(배경) 클릭 또는 ✕
     });
