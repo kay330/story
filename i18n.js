@@ -38,7 +38,7 @@ const I18N = {
     'privacy.p3': '다만, 서비스 개선을 위해 <b>Google Analytics(GA4)</b>를 사용하여 방문자 수와 페이지 조회 수 등의 통계를 분석하며, 이 과정에서 쿠키 및 기기 정보가 처리될 수 있습니다.',
     'privacy.p4': '수집된 이용정보는 <b>오직 통계 목적으로만 활용</b>되며, 개인 식별이나 맞춤형 광고에는 절대 사용되지 않습니다.',
 
-    'footer.desc': '우리는 끊임없이 변하는 속에서 살아간다',
+    'footer.desc': '우리는 끊임없는 변화 속에서 살아간다',
     'doc.desc': '주역점으로 현재 상황과 변화의 방향을 살펴보세요.',
 
     'pwa.aria': '앱 설치',
@@ -283,7 +283,7 @@ const I18N = {
     'privacy.p3': 'To improve the service, we use <b>Google Analytics (GA4)</b> to analyze statistics such as the number of visitors and page views, and cookies and device information may be processed in this process.',
     'privacy.p4': 'The usage information collected is <b>used for statistical purposes only</b> and is never used to identify individuals or for personalized advertising.',
 
-    'footer.desc': 'We live amid constant change.',
+    'footer.desc': 'We live in a world of constant change.',
     'doc.desc': 'Explore your present situation and the direction of change with the I Ching.',
 
     'pwa.aria': 'Install app',
