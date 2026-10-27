@@ -24,7 +24,8 @@
   const isIOS = /iphone|ipad|ipod/i.test(ua) && !window.MSStream;
   // 카카오톡·네이버·인스타그램 등 앱 안의 브라우저 (여기서는 홈 화면에 추가할 수 없음)
   const isInApp = /KAKAOTALK|NAVER\(inapp|Instagram|FBAN|FBAV|FB_IAB|\bLine\/|DaumApps|BAND\//i.test(ua) ||
-    (/Android/i.test(ua) && /;\s*wv\)/.test(ua));
+    (/Android/i.test(ua) && /;\s*wv\)/.test(ua)) ||
+    (isIOS && !/Safari\//i.test(ua));   // 아이폰에서 Safari/Chrome/Edge/Firefox가 아닌 앱 안 화면(WebView)
 
   if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
     window.addEventListener("load", () => {
