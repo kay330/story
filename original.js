@@ -331,18 +331,22 @@ async function tap() {
   tapZone.classList.add('active');
   setTimeout(() => tapZone.classList.remove('active'), 120);
   autoBtn.disabled = true;
-  const ok = await drawLineDramatic(DRAW_DURATION_TAP, takeTapRatios());
-  if (myRun !== drawRun) return;
-  busy = false;
-  autoBtn.disabled = false;
-  if (ok && lines.length < 6) {
-    splitProgressEl.textContent = t('orig.progress', { n: 1 });
-    swipeInstruction.textContent = ''; 
-  }
-  if (ok && lines.length === 6) {
-    busy = true;
-    await revealResultDramatic();
-    if (myRun === drawRun) busy = false;
+  try {
+    const ok = await drawLineDramatic(DRAW_DURATION_TAP, takeTapRatios());
+    if (myRun !== drawRun) return;
+    busy = false;
+    autoBtn.disabled = false;
+    if (ok && lines.length < 6) {
+      splitProgressEl.textContent = t('orig.progress', { n: 1 });
+      swipeInstruction.textContent = '';
+    }
+    if (ok && lines.length === 6) {
+      busy = true;
+      await revealResultDramatic();
+      if (myRun === drawRun) busy = false;
+    }
+  } catch (err) {
+    recoverFromError(err, myRun);
   }
 }
 
@@ -354,16 +358,20 @@ async function autoDraw() {
   busy = true;
   const myRun = drawRun;
   autoBtn.disabled = true;
-  while (lines.length < 6) {
-    const ok = await drawLineDramatic(DRAW_DURATION_AUTO);
-    if (!ok || myRun !== drawRun) return;
-    await sleep(150);
-    if (myRun !== drawRun) return;
-  }
-  await revealResultDramatic();
-  if (myRun === drawRun) {
-    busy = false;
-    autoBtn.disabled = false;
+  try {
+    while (lines.length < 6) {
+      const ok = await drawLineDramatic(DRAW_DURATION_AUTO);
+      if (!ok || myRun !== drawRun) return;
+      await sleep(150);
+      if (myRun !== drawRun) return;
+    }
+    await revealResultDramatic();
+    if (myRun === drawRun) {
+      busy = false;
+      autoBtn.disabled = false;
+    }
+  } catch (err) {
+    recoverFromError(err, myRun);
   }
 }
 

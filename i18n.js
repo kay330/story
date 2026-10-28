@@ -33,6 +33,7 @@ const I18N = {
     'share.manual': '아래 주소를 복사해 전달하세요',
 
     'privacy.title': '개인정보 및 서비스 이용정보 안내',
+    'err.generic': '문제가 생겨 진행을 멈췄습니다. 다시 시도해 주세요.',
     'privacy.p1': '본 서비스는 <b>회원가입 절차가 없으며</b>, 이름이나 이메일 등의 개인정보를 일체 수집하지 않습니다.',
     'privacy.p2': '사용자가 입력하신 모든 내용은 외부 서버로 전송되지 않고, 오직 <b>본인의 웹브라우저에만 안전하게 저장</b>됩니다.',
     'privacy.p3': '다만, 서비스 개선을 위해 <b>Google Analytics(GA4)</b>를 사용하여 방문자 수와 페이지 조회 수 등의 통계를 분석하며, 이 과정에서 쿠키 및 기기 정보가 처리될 수 있습니다.',
@@ -280,6 +281,7 @@ const I18N = {
     'share.manual': 'Copy the address below to share',
 
     'privacy.title': 'Privacy & Usage Information',
+    'err.generic': 'Something went wrong and the draw was stopped. Please try again.',
     'privacy.p1': 'This service <b>has no sign-up</b> and does not collect any personal information such as your name or email.',
     'privacy.p2': 'Everything you enter is not sent to any external server; it is <b>stored safely only in your own web browser</b>.',
     'privacy.p3': 'To improve the service, we use <b>Google Analytics (GA4)</b> to analyze statistics such as the number of visitors and page views, and cookies and device information may be processed in this process.',

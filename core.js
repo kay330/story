@@ -46,6 +46,31 @@ function vibrate(pattern) {
   try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) {}
 }
 
+// ===== 오류 복구 =====
+// 연출 도중 예상 못 한 오류가 나도 버튼이 잠긴 채 멈추지 않도록 상태를 되돌리고 안내한다.
+function recoverFromError(err, myRun) {
+  console.error(err);
+  if (myRun !== undefined && myRun !== drawRun) return;   // 이미 리셋된 이전 연출의 오류는 무시
+  busy = false;
+  if (autoBtn) autoBtn.disabled = false;
+  try { if (typeof stopDrawEffects === 'function') stopDrawEffects(); } catch (e) {}
+  if (tapZone) tapZone.classList.remove('finale', 'waiting-split', 'stage-on');
+  try { showToast(t('err.generic')); } catch (e) {}
+}
+// 전역 안전망: 우리 코드에서 난 오류만 로그 + 안내 (확장 프로그램·외부 스크립트 오류는 무시)
+let lastGlobalToastAt = 0;
+function notifyUnexpected(err) {
+  console.error(err);
+  const now = Date.now();
+  if (now - lastGlobalToastAt < 5000) return;
+  lastGlobalToastAt = now;
+  try { showToast(t('err.generic')); } catch (e) {}
+}
+window.addEventListener('error', e => {
+  if (e.filename && e.filename.indexOf(location.origin) === 0) notifyUnexpected(e.error || e.message);
+});
+window.addEventListener('unhandledrejection', e => notifyUnexpected(e.reason));
+
 // ===== 난수 =====
 // 전통 확률 (시초점, 계사전 '대연지수' 방식): 노음 6 = 1/16, 소양 7 = 5/16, 소음 8 = 7/16, 노양 9 = 3/16
 // 터치 입력(시각·좌표·누른 시간)을 해시로 누적하고 보안 난수와 XOR로 섞는다.

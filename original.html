@@ -2,25 +2,21 @@
 <html lang="ko" data-title-key="doc.title.original">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com https://*.g.doubleclick.net; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5CH5ZKEJT8"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-5CH5ZKEJT8');
-</script>
+<script src="gtag-init.js"></script>
   <meta name="theme-color" content="#1a110b">
   <meta name="description" content="서시법으로 주역 괘를 뽑아 현재 상황과 변화의 방향을 살펴보세요.">
   <link rel="icon" type="image/png" sizes="192x192" href="192.png">
   <link rel="apple-touch-icon" href="192.png">
   <link rel="manifest" href="manifest.webmanifest">
-  <script src="init.js?v=20261026"></script>
+  <script src="init.js?v=20261028"></script>
   <title>주역점 앱 - 서시법</title>
-  <link rel="stylesheet" href="style.css?v=20261026">
-  <link rel="stylesheet" href="original.css?v=20261026">
+  <link rel="stylesheet" href="style.css?v=20261028">
+  <link rel="stylesheet" href="original.css?v=20261028">
 </head>
 <body>
   <div class="app">
@@ -158,27 +154,12 @@
 </footer>
   </div>
 
-  <script src="hexagrams.js?v=20261026"></script>
-  <script src="hexagrams_en.js?v=20261026"></script>
-  <script src="i18n.js?v=20261026"></script>
-  <script src="store.js?v=20261026"></script>
-  <script src="core.js?v=20261026"></script>
-  <script src="menu.js?v=20261026"></script>
-  <script src="original.js?v=20261026"></script>
-  <script>
-    /* 점검용: 메뉴 스크립트(menu.js)가 불러와지지 않았을 때 원인을 알려 줍니다 */
-    (function () {
-      var b = document.getElementById('menuBtn');
-      if (!b) return;
-      b.addEventListener('click', function () {
-        if (typeof MENU_ITEMS === 'undefined' || !document.getElementById('drawer')) {
-          var en = document.documentElement.lang === 'en';
-          alert(en
-            ? 'Could not load the menu file (menu.js).\n1) Make sure menu.js, store.js, i18n.js, init.js, hexagrams_en.js and the other new files are uploaded to the same folder as index.html.\n2) Hard-refresh your browser (Ctrl+Shift+R) or clear the cache and try again.'
-            : '메뉴 파일(menu.js)을 불러오지 못했습니다.\n1) menu.js, store.js, i18n.js, init.js, hexagrams_en.js 등 새 파일을 index.html과 같은 폴더에 모두 올렸는지\n2) 브라우저 새로고침(Ctrl+Shift+R) 또는 캐시 삭제 후 다시 시도해 주세요.');
-        }
-      });
-    })();
-  </script>
+  <script src="hexagrams.js?v=20261028"></script>
+  <script src="hexagrams_en.js?v=20261028"></script>
+  <script src="i18n.js?v=20261028"></script>
+  <script src="store.js?v=20261028"></script>
+  <script src="core.js?v=20261028"></script>
+  <script src="menu.js?v=20261028"></script>
+  <script src="original.js?v=20261028"></script>
 </body>
 </html>
