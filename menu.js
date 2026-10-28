@@ -54,7 +54,7 @@ const MENU_ITEMS = [
 
   // ---------- 공유하기: 앱 주소를 클립보드에 복사 ----------
   // 어느 페이지에서 눌러도 항상 같은 앱 주소를 복사한다. (#view=… 같은 개인 기록 주소는 포함하지 않음)
-  const SHARE_URL = 'https://kay330.github.io/story/';
+  const SHARE_URL = 'https://mubig864.github.io/story/';
   function shareUrl() { return SHARE_URL; }
   function toast(msg) {
     if (typeof showToast === 'function') showToast(msg); else alert(msg);
