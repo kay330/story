@@ -177,7 +177,7 @@ const HEXAGRAMS_EN = {
   "name": "Innocence (Wu Wang)",
   "keyword": "Sincerity without scheming",
   "summary": "Act naturally and honestly, without calculation or forcing.",
-  "core": "Wu Wang (无妄) shows thunder rolling beneath heaven so that all things move according to their nature, and it means acting just as you are, without falseness or vain expectations. If you act with an improper heart, unexpected disaster follows, and you should guard against luck-seeking, like hoping to harvest without ploughing the field.",
+  "core": "Wu Wang (无妄) shows thunder rolling beneath heaven so that all things move according to their nature, and it means acting just as you are, without falseness or vain expectations. If you act with an improper heart, unexpected disaster follows, and you should guard against luck-seeking, like hoping to harvest without plowing the field.",
   "situation": "This is a time when sincerity works better than calculation and show. Even if something unexpected happens, you can avoid fault by holding to your own duty as you respond.",
   "example": "If someone who received an investment offer promising big returns in a short time receives this hexagram, it means: guard against the wish for a lucky windfall, and approach it honestly with proven methods.",
   "actions": [
@@ -408,7 +408,7 @@ const HEXAGRAMS_EN = {
   ],
   "list": {
    "kw": "Drawing near, caring",
-   "meaning": "Earth sits close above the Lake. People or opportunities are coming toward you, and a leader pays attention to what is happening on the ground.",
+   "meaning": "The earth sits close above the lake. People or opportunities are coming toward you, and a leader pays attention to what is happening on the ground.",
    "advice": "Respond actively when an opportunity arrives, but do not let your guard down. Get close, listen, and provide the support that is needed.",
    "example": "A manager should see the work site firsthand, listen to the team's difficulties, and arrange practical support."
   }
@@ -504,7 +504,7 @@ const HEXAGRAMS_EN = {
   ],
   "list": {
    "kw": "Order and caution in relationships",
-   "meaning": "With Thunder over the Lake, it warns against situations where the heart runs ahead, or where the order and terms of a relationship do not fit.",
+   "meaning": "With thunder over the lake, it warns against situations where the heart runs ahead, or where the order and terms of a relationship do not fit.",
    "advice": "Do not rush things just because you want them. Check that each person's role, the promises made, and the long-term outcome are in balance.",
    "example": "In a contract or relationship formed in a hurry, make the terms and responsibilities clear and give yourself enough time to think."
   }
@@ -576,7 +576,7 @@ const HEXAGRAMS_EN = {
   ],
   "list": {
    "kw": "Courtesy, careful conduct",
-   "meaning": "With Heaven above the Lake, it means passing through a dangerous or difficult situation carefully and with courtesy.",
+   "meaning": "With Heaven above the lake, it means passing through a dangerous or difficult situation carefully and with courtesy.",
    "advice": "Respect the other person's position and the rules, and be careful in what you say and do. Courage is not the same as recklessness.",
    "example": "When you have an important conversation with a superior, present your prepared evidence calmly and also consider the other person's face."
   }
@@ -752,7 +752,7 @@ const HEXAGRAMS_EN = {
  "111111": {
   "name": "The Creative (Qian)",
   "keyword": "Pure creative strength",
-  "summary": "Strong initiative and drive: a time to take the lead, with patience and integrity.",
+  "summary": "Strong initiative and drive; a time to take the lead, with patience and integrity.",
   "core": "Right now the flow calls for setting a clear goal and building the situation yourself instead of waiting passively. But if you rely only on strong drive and go it alone, you may clash with those around you, so it is important to keep both confidence and humility.",
   "situation": "In work, career, and relationships alike, the initiative comes to you. Results come when you set the direction first and push forward responsibly, rather than waiting for someone's permission.",
   "example": "For example, if someone considering a job change received this hexagram, it can be read as: even without perfect certainty, it is good to explore the market actively and state the conditions you want clearly. But leading with demands alone or acting aggressively can spoil the negotiation, so dignity and balance matter.",
@@ -776,7 +776,7 @@ const HEXAGRAMS_EN = {
  "000000": {
   "name": "The Receptive (Kun)",
   "keyword": "Pure receptivity",
-  "summary": "Yielding, supportive strength: support and let things grow instead of pushing to the front.",
+  "summary": "Yielding, supportive strength; support and let things grow instead of pushing to the front.",
   "core": "This hexagram stresses going with the flow, cooperation, patience, and acceptance over pushing hard. Results come from building a solid foundation and supporting people and circumstances, not from rushing ahead.",
   "situation": "This is a time to lay groundwork rather than chase quick results. Taking care of the unseen parts, such as organizing the practical details, mending relationships, steadying body and mind, and reviewing your finances, will help you a great deal later.",
   "example": "If you drew this hexagram about love, it can be read to mean that quietly rebuilding trust and syncing up your daily rhythms comes before persuading the other person or rushing to define the relationship.",

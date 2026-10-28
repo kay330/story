@@ -307,6 +307,7 @@ async function drawLineDramatic(duration, ratios) {
   if (myRun !== drawRun) return false;
   burst.remove();
   stopDrawEffects();
+  resetSplitPreview();   // 다음 효의 첫 화면은 처음 효를 뽑을 때와 같게 (막대기 49개)
   return true;
 }
 
@@ -392,8 +393,7 @@ function resetAll() {
   lastRoundRemoved = 0;
   splitProgressEl.textContent = t('orig.progress', { n: 1 });
   swipeInstruction.textContent = '';
-  const r = stalkPreview.getBoundingClientRect();
-  updateSplitPreview(r.left + r.width / 2);
+  resetSplitPreview();
   resetCommon();
 }
 
@@ -421,8 +421,8 @@ function splitRatioAt(clientX) {
   const rect = stalkPreview.getBoundingClientRect();
   return Math.min(0.96, Math.max(0.04, (clientX - rect.left) / rect.width));
 }
-function updateSplitPreview(clientX) {
-  const ratio = splitRatioAt(clientX);
+function updateSplitPreview(clientX, forcedRatio) {
+  const ratio = Number.isFinite(forcedRatio) ? forcedRatio : splitRatioAt(clientX);
   stalkSplitMarker.style.left = (ratio * 100) + '%';
   const leftCount = computeSplit(previewStalkCount, ratio).L;
   leftPreviewCount.textContent = t('orig.leftN', { n: leftCount });
@@ -439,6 +439,24 @@ function updateSplitPreview(clientX) {
     const distance = i < leftCount ? Math.min(14, (leftCount - i) * 1.1) : Math.min(14, (i - leftCount + 1) * 1.1);
     stick.style.transform = `translateX(${i < leftCount ? -distance : distance}px)`;
   });
+}
+
+// 새 효를 뽑기 전 화면은 항상 처음(49개, 가운데 기준)과 같게 되돌린다
+// (페이지를 처음 열었을 때와 똑같이: 막대기 49개, 가르기 표시 없음, '왼쪽 무리/오른쪽 무리' 문구)
+function resetSplitPreview() {
+  previewStalkCount = 49;
+  lastRoundRemoved = 0;
+  stalkPreview.style.width = '';
+  stalkPreview.style.gridTemplateColumns = '';
+  stalkPreview.style.marginLeft = '';
+  stalkPreview.style.marginRight = '';
+  stalkPreview.querySelectorAll('.preview-stalk').forEach(stick => {
+    stick.style.display = '';
+    stick.style.transform = '';
+  });
+  stalkSplitMarker.style.left = '';
+  leftPreviewCount.textContent = t('orig.leftGroup');
+  rightPreviewCount.textContent = t('orig.rightGroup');
 }
 
 function touchPoint(e) {
