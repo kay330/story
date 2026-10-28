@@ -1,5 +1,5 @@
 // 배포 시 CACHE_VERSION만 올리면 이전 캐시가 자동 정리됩니다.
-const CACHE_VERSION = "20261028-5";
+const CACHE_VERSION = "20261028-7";
 const CACHE_NAME = "juyeok-pwa-" + CACHE_VERSION;
 const OFFLINE_URL = "./index.html";
 
@@ -8,7 +8,7 @@ const PRECACHE = [
   "./style.css", "./original.css",
   "./init.js", "./gtag-init.js", "./hexagram-list.js", "./hexagrams.js", "./hexagrams_en.js", "./i18n.js", "./store.js",
   "./core.js", "./menu.js", "./index.js", "./original.js", "./pwa-install.js",
-  "./manifest.webmanifest", "./192.png", "./512.png"
+  "./manifest.webmanifest", "./192.png", "./512.png", "./apple-touch-icon.png", "./maskable-512.png"
 ];
 
 self.addEventListener("install", (event) => {
