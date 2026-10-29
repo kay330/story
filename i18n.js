@@ -88,8 +88,8 @@ const I18N = {
     'result.fromVault': '보관함에서 불러온 점괘 · {date}',
     'result.langNote': 'The detailed interpretation below is currently available in Korean only.',
 
-    'q.heading': '(질문) 지금 상황을 이해하고 변화의 방향 찾기',
-    'q.placeholder': '(예시)\n• 이직 후 어떤 상황에 직면하며, 주의할 점은?\n• 현재 OO상황의 원인과 대처 방법은?',
+    'q.heading': '지금 상황을 이해하고 변화의 방향 찾기',
+    'q.placeholder': '(질문 예시)\n• 이직 후 어떤 상황에 직면하며, 주의할 점은?\n• 현재 OO상황의 원인과 대처 방법은?',
 
     'tap.hint': '화면을 터치해 효를 뽑으세요',
     'tap.info': '탭 1번 = 효 1개',
@@ -336,7 +336,7 @@ const I18N = {
     'result.fromVault': 'Loaded from your saved readings · {date}',
     'result.langNote': 'The detailed interpretation below is currently available in Korean only.',
 
-    'q.heading': '(Question) Understand your situation now and find the direction of change',
+    'q.heading': 'Understand your situation now and find the direction of change',
     'q.placeholder': '(Examples)\n• What will I face after changing jobs, and what should I watch out for?\n• What is behind my current situation, and how should I respond?',
 
     'tap.hint': 'Tap the screen to draw a line',
