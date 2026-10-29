@@ -39,6 +39,7 @@ let drawRun = 0;      // 리셋 시 진행 중인 연출을 취소하기 위한 
 let busy = false;     // 연출 진행 중 중복 입력 방지
 let PAGE_METHOD = 'simple';   // 'simple'(index.html) | 'yarrow'(original.html) — 보관함 기록에 쓰임
 let tapDefaultKey = 'tap.info';  // 안내 문구 번역 키 (original.js가 바꿈)
+let autoMode = false;       // 자동 뽑기 중에는 '터치/가르기' 안내 문구를 숨긴다
 let currentResult = null;    // 지금 화면에 보이는 결과 { values, question, method, savedId, savedAt }
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));

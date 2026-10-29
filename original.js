@@ -8,7 +8,7 @@ const DRAW_DURATION_TAP = 2000;
 const DRAW_DURATION_AUTO = 600;
 const RESULT_DELAY = 1000;
 const tapMsgEl = document.getElementById('tapMainInstruction');
-const tapMsgOriginal = () => t('orig.splitMsg');   // 언어에 맞는 기본 안내 문구
+const tapMsgOriginal = () => autoMode ? '' : t('orig.splitMsg');   // 언어에 맞는 기본 안내 문구
 
 function startDrawEffects() {
   tapZone.classList.add('drawing');
@@ -359,6 +359,8 @@ async function autoDraw() {
   busy = true;
   const myRun = drawRun;
   autoBtn.disabled = true;
+  autoMode = true;
+  if (tapMsgEl) tapMsgEl.textContent = '';
   try {
     while (lines.length < 6) {
       const ok = await drawLineDramatic(DRAW_DURATION_AUTO);
@@ -369,6 +371,7 @@ async function autoDraw() {
     await revealResultDramatic();
     if (myRun === drawRun) {
       busy = false;
+      autoMode = false;
       autoBtn.disabled = false;
     }
   } catch (err) {
@@ -377,6 +380,7 @@ async function autoDraw() {
 }
 
 function resetAll() {
+  autoMode = false;
   drawRun += 1;
   busy = false;
   autoBtn.disabled = false;

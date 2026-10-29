@@ -1,5 +1,5 @@
 // 배포 시 CACHE_VERSION만 올리면 이전 캐시가 자동 정리됩니다.
-const CACHE_VERSION = "20261029-5";
+const CACHE_VERSION = "20261029-8";
 const CACHE_NAME = "juyeok-pwa-" + CACHE_VERSION;
 const OFFLINE_URL = "./index.html";
 

@@ -170,6 +170,34 @@ const MENU_ITEMS = [
     dlg.addEventListener('close', () => menuBtn.focus({ preventScroll: true }));
   });
 
+  // ---------- 결과 화면 하단 고정 바 (보관함 · 메뉴) ----------
+  // 결과를 읽다가 맨 위로 올라가지 않고도 보관함·메뉴를 열 수 있게 한다.
+  const resultCardEl = document.getElementById('resultCard');
+  {
+    const bar = el('div', 'bottom-bar hidden', { role: 'toolbar' });
+    const barVault = el('button', 'bar-btn', { type: 'button' });
+    const barMenu = el('button', 'bar-btn', { type: 'button' });
+    const fillBar = () => {
+      barVault.innerHTML = '<span aria-hidden="true">☷</span> ' + t('bar.vault');
+      barMenu.innerHTML = '<span aria-hidden="true">☰</span> ' + t('menu.title');
+      bar.setAttribute('aria-label', t('menu.title'));
+    };
+    fillBar();
+    barVault.addEventListener('click', () => openSheet('vault'));
+    barMenu.addEventListener('click', () => openDrawer());
+    bar.append(barVault, barMenu);
+    document.body.appendChild(bar);
+    // 결과 카드가 있는 페이지(뽑기)에서는 결과가 나온 뒤에만, 그 밖의 페이지(설명·64괘 목록)에서는 항상 보인다
+    const syncBar = () => {
+      const show = resultCardEl ? !resultCardEl.classList.contains('hidden') : true;
+      bar.classList.toggle('hidden', !show);
+      document.body.classList.toggle('has-bar', show);
+    };
+    if (resultCardEl) new MutationObserver(syncBar).observe(resultCardEl, { attributes: true, attributeFilter: ['class'] });
+    syncBar();
+    onLangChange(fillBar);
+  }
+
   // ---------- 설정 ----------
   function syncSettingsUI() {
     const s = getSettings();

@@ -712,6 +712,7 @@ dialog.sheet::backdrop { background: var(--overlay); }
 .vault-q { margin-top: 6px; font-size: 0.92rem; line-height: 1.5; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; word-break: break-word; }
 .vault-q.muted { color: var(--sub); }
 /* 모바일 브라우저는 16px 미만 입력창에 포커스하면 화면을 확대해 옆으로 밀어버리므로 16px 이상으로 둔다 */
+.tap-instruction > div:empty { display: none; }
 .vault-q-edit { margin-top: 6px; min-height: 72px; font-size: 16px; line-height: 1.5; max-width: 100%; }
 .vault-q-actions { margin-top: 8px; display: flex; gap: 8px; justify-content: flex-end; }
 .vault-actions { grid-column: 1 / -1; display: flex; gap: 8px; justify-content: flex-end; }
@@ -767,3 +768,20 @@ button.danger { background: rgba(208,58,87,0.18); color: var(--text); border-col
   padding-left: max(14px, env(safe-area-inset-left, 0px));
 }
 .toast { bottom: calc(28px + env(safe-area-inset-bottom, 0px)); }
+
+/* ===== 결과 화면 하단 고정 바 ===== */
+.bottom-bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 800;
+  display: flex; gap: 10px; justify-content: center;
+  padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
+  background: var(--surface); border-top: 1px solid var(--border);
+  box-shadow: 0 -6px 18px rgba(0,0,0,0.18);
+}
+.bottom-bar.hidden { display: none; }
+.bar-btn {
+  flex: 1 1 0; max-width: 240px; padding: 12px 8px; border-radius: 12px; font-weight: 700; font-size: 0.95rem;
+  background: var(--ghost-bg); color: var(--text); border: 1px solid var(--border); cursor: pointer;
+}
+.bar-btn:hover { background: var(--block-bg); }
+body.has-bar .app { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+body.has-bar .toast { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }

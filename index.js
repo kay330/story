@@ -9,7 +9,7 @@ const DRAW_DURATION_AUTO = 1600;  // 자동 뽑기 시 효 1개당 시간(ms)
 const RESULT_DELAY = 1300;        // 6번째 효 확정 후 결과 공개까지의 뜸(ms)
 const PHASE_KEYS = ['tap.phase1', 'tap.phase2', 'tap.phase3'];
 const tapMsgEl = tapZone.querySelector('.tap-instruction > div:not(.tap-count)');
-const tapMsgOriginal = () => t('tap.hint');   // 언어에 맞는 기본 안내 문구
+const tapMsgOriginal = () => autoMode ? '' : t('tap.hint');   // 언어에 맞는 기본 안내 문구
 
 function startDrawEffects() {
   tapZone.classList.add('drawing');
@@ -138,6 +138,8 @@ async function autoDraw() {
   busy = true;
   const myRun = drawRun;
   autoBtn.disabled = true;
+  autoMode = true;
+  if (tapMsgEl) tapMsgEl.textContent = '';
   try {
     while (lines.length < 6) {
       const ok = await drawLineDramatic(DRAW_DURATION_AUTO);
@@ -148,6 +150,7 @@ async function autoDraw() {
     await revealResultDramatic();
     if (myRun === drawRun) {
       busy = false;
+      autoMode = false;
       autoBtn.disabled = false;
     }
   } catch (err) {
@@ -156,6 +159,7 @@ async function autoDraw() {
 }
 
 function resetAll() {
+  autoMode = false;
   drawRun += 1;           // 진행 중인 뽑기 연출 취소
   busy = false;
   autoBtn.disabled = false;
