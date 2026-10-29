@@ -8,6 +8,9 @@ const MENU_ICONS = {
   gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/>',
   link: '<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/>',
   lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  user: '<circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.8 3.6-6 7-6s6.2 2.2 7 6"/>',
+  chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  shield: '<path d="M12 3l7 3v5.5c0 4.3-3 7.7-7 9.5-4-1.8-7-5.2-7-9.5V6z"/><path d="M9 12l2.2 2.2L15.5 10"/>',
   mail: '<rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3.5 7l8.5 6.5L20.5 7"/>'
 };
 
@@ -117,14 +120,23 @@ const MENU_ITEMS = [
 
   // ---------- 개인정보 보호 안내 창 ----------
  const privacyDlg = el('dialog', 'sheet', { 'aria-labelledby': 'privacyTitle' });
+  const PRIVACY_CARDS = [
+    { icon: 'user', t: 'privacy.c1t', d: 'privacy.c1d' },
+    { icon: 'lock', t: 'privacy.c2t', d: 'privacy.c2d' },
+    { icon: 'chart', t: 'privacy.c3t', d: 'privacy.c3d', note: true },   // 외부 서비스(GA4)가 관련된 유일한 항목 — 강조선으로 구분
+    { icon: 'shield', t: 'privacy.c4t', d: 'privacy.c4d' }
+  ];
+  const svgIcon = n => '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true">' + MENU_ICONS[n] + '</svg>';
   privacyDlg.innerHTML =
     '<div class="sheet-head"><h2 id="privacyTitle" data-i18n="privacy.title"></h2>' +
     '<button type="button" class="icon-btn" data-close data-i18n-aria="settings.close">✕</button></div>' +
-    '<div class="sheet-body" style="line-height: 1.7; font-size: 0.92rem; word-break: keep-all;">' +
-    '<p style="margin-bottom: 14px;" data-i18n-html="privacy.p1"></p>' +
-    '<p style="margin-bottom: 14px;" data-i18n-html="privacy.p2"></p>' +
-    '<p style="margin-bottom: 14px;" data-i18n-html="privacy.p3"></p>' +
-    '<p style="margin-bottom: 0;" data-i18n-html="privacy.p4"></p>' +
+    '<div class="sheet-body privacy-body">' +
+    '<div class="privacy-lead"><span class="privacy-lead-icon">' + svgIcon('shield') + '</span>' +
+    '<strong data-i18n="privacy.lead"></strong><span class="privacy-lead-sub" data-i18n="privacy.leadSub"></span></div>' +
+    PRIVACY_CARDS.map(c =>
+      '<div class="privacy-card' + (c.note ? ' note' : '') + '"><span class="privacy-card-icon">' + svgIcon(c.icon) + '</span>' +
+      '<div><h3 data-i18n="' + c.t + '"></h3><p data-i18n-html="' + c.d + '"></p></div></div>').join('') +
+    '<p class="privacy-foot" data-i18n="privacy.foot"></p>' +
     '</div>';
 
   // ---------- 보관함 창 ----------

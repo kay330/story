@@ -801,3 +801,20 @@ html[data-fs="xlarge"] .bar-btn { font-size: 0.8rem; }
 /* 아이폰 홈 화면 앱: 처음 실행 때 화면이 살짝 밀리는 현상을 줄인다 */
 html { height: 100%; overscroll-behavior-y: none; }
 html, body { -webkit-text-size-adjust: 100%; }
+
+/* ===== 개인정보 및 서비스 이용정보 안내 ===== */
+.privacy-body { display: grid; gap: 10px; padding-top: 10px; }
+.privacy-lead { display: grid; justify-items: center; gap: 6px; text-align: center; padding: 18px 12px 16px;
+  border-radius: 16px; background: linear-gradient(135deg, rgba(192,138,90,0.22), rgba(192,138,90,0.08)); border: 1px solid var(--border); }
+.privacy-lead-icon { color: var(--accent); display: inline-flex; }
+.privacy-lead-icon svg { width: 30px; height: 30px; }
+.privacy-lead strong { font-size: 1.1rem; line-height: 1.4; word-break: keep-all; }
+.privacy-lead-sub { color: var(--sub); font-size: 0.9rem; }
+.privacy-card { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; padding: 14px;
+  border-radius: 14px; background: var(--block-bg); border: 1px solid var(--border); }
+.privacy-card.note { border-left: 3px solid var(--accent); }
+.privacy-card-icon { color: var(--accent); display: inline-flex; margin-top: 1px; }
+.privacy-card h3 { margin: 0 0 4px; font-size: 1rem; }
+.privacy-card p { margin: 0; color: var(--sub); font-size: 0.92rem; line-height: 1.65; word-break: keep-all; }
+.privacy-card p b { color: var(--text); font-weight: 700; }
+.privacy-foot { margin: 4px 0 0; text-align: center; color: var(--sub); font-size: 0.85rem; }
