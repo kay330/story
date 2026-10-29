@@ -3,15 +3,23 @@
    모든 페이지에서 공용으로 쓰며, 서랍·창은 이 파일이 body에 직접 만든다.
    요구 사항: 페이지에 #menuBtn 버튼이 있어야 하고, i18n.js · store.js · core.js 다음에 로드한다. */
 
+/* 메뉴 아이콘: 이모지는 기기마다 색이 달라 일관성이 없으므로, 색을 하나(--accent)로 통일할 수 있는 선 아이콘(SVG)을 쓴다 */
+const MENU_ICONS = {
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/>',
+  link: '<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/>',
+  lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  mail: '<rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3.5 7l8.5 6.5L20.5 7"/>'
+};
+
 /* ★ 나중에 페이지를 만들면 여기 href만 바꾸면 됩니다. (action 항목은 창을 엽니다) */
 const MENU_ITEMS = [
   { id: 'about',    key: 'menu.about',    glyph: '☯', href: 'about.html' },
   { id: 'list',     key: 'menu.list',     glyph: '☰', href: 'hexagram-list.html' },
   { id: 'vault',    key: 'menu.vault',    glyph: '☷', action: 'vault' },
-  { id: 'settings', key: 'menu.settings', glyph: '⚙', action: 'settings' },
-  { id: 'share',    key: 'menu.share',    glyph: '🔗', action: 'share' },
-  { id: 'privacy',  key: 'menu.privacy',  glyph: '🔒', action: 'privacy' },
-  { id: 'contact',  key: 'menu.contact',  glyph: '✉', href: 'mailto:mubig864@gmail.com' }
+  { id: 'settings', key: 'menu.settings', icon: 'gear', action: 'settings' },
+  { id: 'share',    key: 'menu.share',    icon: 'link', action: 'share' },
+  { id: 'privacy',  key: 'menu.privacy',  icon: 'lock', action: 'privacy' },
+  { id: 'contact',  key: 'menu.contact',  icon: 'mail', href: 'mailto:mubig864@gmail.com' }
 ];
 
 (function () {
@@ -42,7 +50,11 @@ const MENU_ITEMS = [
     const node = item.href ? el('a', 'drawer-item', { href: item.href }) : el('button', 'drawer-item', { type: 'button' });
     node.dataset.menuId = item.id;
     const glyph = el('span', 'drawer-glyph', { 'aria-hidden': 'true' });
-    glyph.textContent = item.glyph;
+    if (item.icon) {
+      glyph.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false">' + MENU_ICONS[item.icon] + '</svg>';
+    } else {
+      glyph.textContent = item.glyph + '\uFE0E';   // 텍스트 형태로 고정(이모지 색 방지)
+    }
     const label = el('span', null, { 'data-i18n': item.key });
     node.append(glyph, label);
     if (item.action === 'share') node.addEventListener('click', () => { closeDrawer(false); shareApp(); });
@@ -184,7 +196,7 @@ const MENU_ITEMS = [
     const barVault = el('button', 'bar-btn', { type: 'button' });
     const barMenu = el('button', 'bar-btn', { type: 'button' });
     const fillBar = () => {
-      barDivine.innerHTML = '<span aria-hidden="true">☯</span> ' + t('bar.divine');
+      barDivine.innerHTML = '<span aria-hidden="true">☲</span> ' + t('bar.divine');
       barVault.innerHTML = '<span aria-hidden="true">☷</span> ' + t('bar.vault');
       barMenu.innerHTML = '<span aria-hidden="true">☰</span> ' + t('menu.title');
       bar.setAttribute('aria-label', t('menu.title'));

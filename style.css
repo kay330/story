@@ -666,7 +666,8 @@ body.menu-open { overflow: hidden; }
   text-align: left; text-decoration: none; cursor: pointer;
 }
 .drawer-item:hover { background: var(--block-bg); border-color: var(--border); }
-.drawer-glyph { width: 26px; text-align: center; font-size: 1.25rem; color: var(--accent); flex-shrink: 0; }
+.drawer-glyph { width: 26px; text-align: center; font-size: 1.25rem; color: var(--accent); flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; line-height: 1; }
+.drawer-glyph svg { display: block; }
 .icon-btn {
   width: 40px; height: 40px; padding: 0; border-radius: 12px; font-size: 1rem;
   background: var(--ghost-bg); color: var(--text); border: 1px solid var(--border);
