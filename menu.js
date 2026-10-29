@@ -212,6 +212,8 @@ const MENU_ITEMS = [
   }
 
   function renderVault() {
+    // 입력창 포커스로 화면이 옆으로 밀렸다면 원위치
+    if (window.scrollX) window.scrollTo(0, window.scrollY);
     const records = vaultList();
     vaultListEl.replaceChildren();
     vaultCountEl.textContent = records.length ? t('vault.count', { n: records.length }) : '';
