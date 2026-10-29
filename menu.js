@@ -143,7 +143,20 @@ const MENU_ITEMS = [
 
   // ---------- 서랍 열고 닫기 ----------
   const appRoot = document.querySelector('.app');
+  // 아이폰 홈 화면 앱은 처음 실행 때 화면이 살짝 아래로 밀린 채 시작하는 경우가 있어,
+  // 고정(fixed) 서랍의 터치 위치가 눈에 보이는 위치와 어긋난다. 시작·복귀·회전 때 위치를 다시 맞춘다.
+  function realign() {
+    if (document.body.classList.contains('menu-open')) return;
+    if (window.scrollY > 0 && window.scrollY < 3) window.scrollTo(0, 0);
+    void drawer.offsetHeight;   // 레이아웃 강제 갱신
+  }
+  window.addEventListener('pageshow', realign);
+  window.addEventListener('resize', realign);
+  window.addEventListener('orientationchange', realign);
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', realign);
   function openDrawer() {
+    if (window.scrollY < 3) window.scrollTo(0, 0);
+    void drawer.offsetHeight;
     document.body.classList.add('menu-open');
     drawer.inert = false;
     if (appRoot) appRoot.inert = true;
