@@ -12,7 +12,7 @@ const I18N = {
     'doc.title.list': '주역 64괘 설명 - 주역점',
 
     'app.name': '주역점',
-    'app.sub': '주역점은 우연히 얻어진 6개 효(爻)로 괘(卦)를 만들어 현재의 상황과 변화의 방향을 설명합니다. 고정된 운명이 아닌 변화의 형세를 참고하세요.',
+    'app.sub': '주역점은 운명이나 미래를 예측하지 않습니다. 선택의 갈림길에서 지혜를 얻고, 내가 처한 상황에서 한 걸음 물러나 문제를 보다 객관적으로 바라보며, 나아갈 방향을 스스로 찾도록 돕는 지혜입니다.',
     'nav.toOriginal': '전통기법으로 보기',
     'nav.back': '돌아가기',
     'nav.toDraw': '점 보러 가기',
@@ -88,7 +88,7 @@ const I18N = {
     'result.fromVault': '보관함에서 불러온 점괘 · {date}',
     'result.langNote': 'The detailed interpretation below is currently available in Korean only.',
 
-    'q.heading': '(질문) 현재 상황을 파악하고 올바른 변화의 방향 찾기',
+    'q.heading': '(질문) 지금 상황을 이해하고 변화의 방향 찾기',
     'q.placeholder': '(예시)\n• 이직 후 어떤 상황에 직면하며, 주의할 점은?\n• 현재 OO상황의 원인과 대처 방법은?',
 
     'tap.hint': '화면을 터치해 효를 뽑으세요',
@@ -260,7 +260,7 @@ const I18N = {
     'doc.title.list': 'The 64 Hexagrams',
 
     'app.name': 'I Ching',
-    'app.sub': 'The I Ching builds a hexagram (卦) from six lines (爻) drawn by chance and describes your present situation and the direction of change. Treat it as a map of shifting circumstances, not a fixed fate.',
+    'app.sub': 'The I Ching does not predict fate or the future. It is a source of wisdom at a crossroads of choice, helping you step back from your situation, see the problem more objectively, and find your own way forward.',
     'nav.toOriginal': 'Traditional method',
     'nav.back': 'Back',
     'nav.toDraw': 'Cast a reading',
@@ -336,7 +336,7 @@ const I18N = {
     'result.fromVault': 'Loaded from your saved readings · {date}',
     'result.langNote': 'The detailed interpretation below is currently available in Korean only.',
 
-    'q.heading': '(Question) Understand your situation and find the right direction of change',
+    'q.heading': '(Question) Understand your situation now and find the direction of change',
     'q.placeholder': '(Examples)\n• What will I face after changing jobs, and what should I watch out for?\n• What is behind my current situation, and how should I respond?',
 
     'tap.hint': 'Tap the screen to draw a line',
