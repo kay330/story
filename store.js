@@ -16,14 +16,15 @@ function lsSet(key, value) {
 }
 
 // ===== 설정 =====
-const DEFAULT_SETTINGS = { theme: 'dark', lang: 'ko' };
+const DEFAULT_SETTINGS = { theme: 'dark', lang: 'ko', fontSize: 'normal' };
 
 function getSettings() {
   let s = {};
   try { s = JSON.parse(lsGet(SETTINGS_KEY)) || {}; } catch (e) { s = {}; }
   return {
     theme: ['dark', 'light'].includes(s.theme) ? s.theme : DEFAULT_SETTINGS.theme,
-    lang: ['ko', 'en'].includes(s.lang) ? s.lang : DEFAULT_SETTINGS.lang
+    lang: ['ko', 'en'].includes(s.lang) ? s.lang : DEFAULT_SETTINGS.lang,
+    fontSize: ['normal', 'large', 'xlarge'].includes(s.fontSize) ? s.fontSize : DEFAULT_SETTINGS.fontSize
   };
 }
 function setSetting(key, value) {
@@ -41,6 +42,15 @@ function applyTheme(pref) {
   document.documentElement.dataset.theme = theme;
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.setAttribute('content', theme === 'light' ? '#f7f0e6' : '#1a110b');
+}
+// ===== 글자 크기 =====
+function applyFontSize(size) {
+  if (size === 'large' || size === 'xlarge') document.documentElement.dataset.fs = size;
+  else delete document.documentElement.dataset.fs;
+}
+function setFontSize(size) {
+  setSetting('fontSize', size);
+  applyFontSize(size);
 }
 function setTheme(pref) {
   setSetting('theme', pref);

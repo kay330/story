@@ -92,6 +92,11 @@ const MENU_ITEMS = [
     '<div class="seg" role="group" data-seg="theme">' +
     '<button type="button" data-val="dark" data-i18n="settings.theme.dark"></button>' +
     '<button type="button" data-val="light" data-i18n="settings.theme.light"></button></div></div>' +
+    '<div class="setting-row"><h3 data-i18n="settings.fontSize"></h3>' +
+    '<div class="seg" role="group" data-seg="fontSize">' +
+    '<button type="button" data-val="normal" data-i18n="settings.fs.normal"></button>' +
+    '<button type="button" data-val="large" data-i18n="settings.fs.large"></button>' +
+    '<button type="button" data-val="xlarge" data-i18n="settings.fs.xlarge"></button></div></div>' +
     '<div class="setting-row"><h3 data-i18n="settings.lang"></h3>' +
     '<div class="seg" role="group" data-seg="lang">' +
     '<button type="button" data-val="ko" data-i18n="settings.lang.ko"></button>' +
@@ -175,17 +180,24 @@ const MENU_ITEMS = [
   const resultCardEl = document.getElementById('resultCard');
   {
     const bar = el('div', 'bottom-bar hidden', { role: 'toolbar' });
+    const barDivine = el('button', 'bar-btn', { type: 'button' });
     const barVault = el('button', 'bar-btn', { type: 'button' });
     const barMenu = el('button', 'bar-btn', { type: 'button' });
     const fillBar = () => {
+      barDivine.innerHTML = '<span aria-hidden="true">☯</span> ' + t('bar.divine');
       barVault.innerHTML = '<span aria-hidden="true">☷</span> ' + t('bar.vault');
       barMenu.innerHTML = '<span aria-hidden="true">☰</span> ' + t('menu.title');
       bar.setAttribute('aria-label', t('menu.title'));
     };
     fillBar();
+    // 점 보기: 뽑기 페이지에서는 맨 위(질문·뽑기 영역)로, 다른 페이지에서는 주역점 앱으로 이동
+    barDivine.addEventListener('click', () => {
+      if (resultCardEl) window.scrollTo({ top: 0, behavior: 'smooth' });
+      else location.href = 'index.html';
+    });
     barVault.addEventListener('click', () => openSheet('vault'));
     barMenu.addEventListener('click', () => openDrawer());
-    bar.append(barVault, barMenu);
+    bar.append(barDivine, barVault, barMenu);
     document.body.appendChild(bar);
     // 결과 카드가 있는 페이지(뽑기)에서는 결과가 나온 뒤에만, 그 밖의 페이지(설명·64괘 목록)에서는 항상 보인다
     const syncBar = () => {
@@ -202,6 +214,7 @@ const MENU_ITEMS = [
   function syncSettingsUI() {
     const s = getSettings();
     settingsDlg.querySelectorAll('[data-seg="theme"] button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.val === s.theme)));
+    settingsDlg.querySelectorAll('[data-seg="fontSize"] button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.val === s.fontSize)));
     settingsDlg.querySelectorAll('[data-seg="lang"] button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.val === s.lang)));
   }
   settingsDlg.addEventListener('click', e => {
@@ -209,6 +222,7 @@ const MENU_ITEMS = [
     if (!b) return;
     const kind = b.parentElement.dataset.seg;
     if (kind === 'theme') setTheme(b.dataset.val);
+    if (kind === 'fontSize') setFontSize(b.dataset.val);
     if (kind === 'lang') setLang(b.dataset.val);
     syncSettingsUI();
   });
@@ -339,6 +353,7 @@ const MENU_ITEMS = [
 (function bootstrap() {
   const s = getSettings();
   applyTheme(s.theme);
+  applyFontSize(s.fontSize);
   setLang(s.lang, false);
   if (typeof handleViewHash === 'function') {
     handleViewHash();

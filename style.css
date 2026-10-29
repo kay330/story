@@ -376,7 +376,7 @@ textarea::placeholder {
 
 /* Mobile readability improvements */
 @media (max-width: 699px) {
-  body { font-size: 18px; }
+  body { font-size: 1.125rem; }
   .app { padding: 16px 12px 36px; }
   h1 { font-size: 2rem; }
   h2 { font-size: 1.3rem; }
@@ -785,3 +785,14 @@ button.danger { background: rgba(208,58,87,0.18); color: var(--text); border-col
 .bar-btn:hover { background: var(--block-bg); }
 body.has-bar .app { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 body.has-bar .toast { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
+
+/* ===== 글자 크기 (설정) — rem 기준이므로 html 글자 크기만 바꾸면 화면 전체가 함께 커진다 ===== */
+html[data-fs="large"] { font-size: 112.5%; }
+html[data-fs="xlarge"] { font-size: 125%; }
+/* 글자가 커져도 제목과 하단 바가 줄바꿈되지 않게 */
+.header-left h1 { white-space: nowrap; }
+.bar-btn { white-space: nowrap; padding-left: 4px; padding-right: 4px; }
+html[data-fs="large"] .header-left h1 { font-size: 1.85rem; }
+html[data-fs="xlarge"] .header-left h1 { font-size: 1.6rem; }
+html[data-fs="large"] .bar-btn { font-size: 0.88rem; }
+html[data-fs="xlarge"] .bar-btn { font-size: 0.8rem; }
