@@ -241,6 +241,34 @@ const MENU_ITEMS = [
       if (!rec.question) q.classList.add('muted');
       body.append(title, meta, q);
 
+      // 질문 편집: 그 자리에서 입력창으로 바뀐다
+      const editBtn = el('button', 'ghost small', { type: 'button' });
+      editBtn.textContent = t(rec.question ? 'vault.editQ' : 'vault.addQ');
+      editBtn.addEventListener('click', () => {
+        const ta = el('textarea', 'vault-q-edit', { maxlength: '500', rows: '3', placeholder: t('q.placeholder') });
+        ta.value = rec.question || '';
+        const row = el('div', 'vault-q-actions');
+        const saveB = el('button', 'secondary small', { type: 'button' });
+        saveB.textContent = t('vault.qSave');
+        const cancelB = el('button', 'ghost small', { type: 'button' });
+        cancelB.textContent = t('vault.qCancel');
+        row.append(cancelB, saveB);
+        q.replaceWith(ta);
+        ta.after(row);
+        actions.classList.add('hidden');
+        ta.focus();
+        cancelB.addEventListener('click', renderVault);
+        saveB.addEventListener('click', () => {
+          const ok = vaultUpdateQuestion(rec.id, ta.value);
+          if (typeof currentResult !== 'undefined' && currentResult && currentResult.savedId === rec.id) {
+            currentResult.question = ta.value.trim().slice(0, 500);
+            if (typeof renderResult === 'function') renderResult();
+          }
+          if (typeof showToast === 'function') showToast(t(ok ? 'vault.qSaved' : 'result.saveFail'));
+          renderVault();
+        });
+      });
+
       const actions = el('div', 'vault-actions');
       const viewBtn = el('button', 'secondary small', { type: 'button' });
       viewBtn.textContent = t('vault.view');
@@ -248,7 +276,7 @@ const MENU_ITEMS = [
       const delBtn = el('button', 'ghost small', { type: 'button' });
       delBtn.textContent = t('vault.delete');
       armedClick(delBtn, 'vault.delete', 'vault.deleteSure', () => { vaultRemove(rec.id); renderVault(); });
-      actions.append(viewBtn, delBtn);
+      actions.append(viewBtn, editBtn, delBtn);
 
       li.append(mini, body, actions);
       vaultListEl.appendChild(li);

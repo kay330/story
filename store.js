@@ -83,6 +83,15 @@ function vaultAdd({ values, question, method }) {
   return { ok, id: record.id, record };
 }
 
+// 저장된 기록의 질문만 고친다. 성공하면 true.
+function vaultUpdateQuestion(id, question) {
+  const list = vaultList();
+  const rec = list.find(r => r.id === id);
+  if (!rec) return false;
+  rec.question = (question || '').trim().slice(0, 500);
+  return vaultWrite(list);
+}
+
 function vaultRemove(id) {
   return vaultWrite(vaultList().filter(r => r.id !== id));
 }
